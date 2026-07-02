@@ -1,15 +1,30 @@
-# Aroha AI — Your Personal Health Companion
+# Aroha AI — A Personal Health Memory System
 
 [![Expo](https://img.shields.io/badge/Expo-52+-black)](https://expo.dev)
 [![React Native](https://img.shields.io/badge/React_Native-0.76-blue)](https://reactnative.dev)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020)](https://workers.cloudflare.com)
 [![Gemini](https://img.shields.io/badge/Gemini-1.5_Flash-4285F4)](https://deepmind.google.com/gemini)
 
-**Aroha AI** is an Android health companion for elderly individuals managing multiple medications. It combines an AI chat with persistent memory, a daily schedule with reminders, camera-based medication capture, ABDM/health-record screenshot import, symptom photo logging, and one-tap doctor-visit summaries.
+**Aroha AI is a Personal Health Memory System** for Indian elders and the families who care for them. Every interaction — a photographed pill strip, an imported ABHA record, a logged symptom, a chat, a completed dose — becomes **structured health memory** that makes the next interaction smarter. Today that memory delivers concrete value: AI medication reminders, camera → medication capture, ABDM/ABHA record import, persistent health memory, and one-tap doctor-visit summaries.
+
+The innovation isn't Gemini, and it isn't Vision. It's the **Health Memory Layer** that orchestrates them: inputs become memory, memory becomes context, context becomes personalization, personalization improves care.
 
 > Built for **FlowZint AI Hackathon 2026** — Open Innovation category. Android-first (iOS to follow).
 
-**Positioning:** Aroha is a medication reminder + health-logging companion that helps elders remember, organize, and prepare for their doctor. It **advocates for the patient — it never overrides the doctor.** No diagnosis, no "your prescription is wrong."
+**Positioning:** A health-memory companion that helps elders and their families remember, organize, and prepare for care. It **advocates for the patient — it never overrides the doctor.** No diagnosis, no "your prescription is wrong."
+
+### The Health Memory Layer
+
+```
+   Camera (pills) ─┐
+   ABHA / ABDM ────┤
+   Chat ───────────┼──►  HEALTH MEMORY LAYER  ──►  Gemini reasoning  ──►  Personalized
+   Symptoms ───────┤   (Memory Extractor →                                actions &
+   Schedule/doses ─┘    Health Timeline →                                 reminders
+                        Context Builder)
+```
+
+Every input flows into one memory layer; Gemini reasons over that memory, not over a single message. That orchestration — not any one model call — is what makes Aroha more than a chatbot.
 
 ---
 
@@ -101,11 +116,15 @@ Full step-by-step is in **SCAFFOLD_SETUP.md**. In short:
 ```
 ArohaAI/
 ├── app/                    # Expo Router pages
-│   └── (tabs)/             # Main app tabs (chat, …)
+│   └── (tabs)/             # Main app tabs (chat, schedule, …)
 ├── src/
-│   └── lib/                # aroha.ts (worker client), storage.ts (on-device)
+│   ├── lib/                # aroha.ts (worker client), storage.ts (on-device)
+│   └── memory/             # Health Memory Layer: extractor, timeline, context builder
 ├── worker/                 # Cloudflare Worker — holds the Gemini key
 ├── assets/                 # Images, icons, fonts
+├── PRD.md · ARCHITECTURE.md · PITCH_DECK.md · DEMO_SCRIPT.md
+├── JUDGE_QA.md · SUBMISSION_CHECKLIST.md · BUILD_PLAN.md
+└── README.md
 ├── PRD.md                  # Product Requirements Document
 ├── ARCHITECTURE.md         # System architecture
 ├── DEMO_SCRIPT.md          # Demo video script

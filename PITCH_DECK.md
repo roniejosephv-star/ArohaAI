@@ -11,7 +11,8 @@
 ┌─────────────────────────────────────────┐
 │                                         │
 │           AROHA AI                       │
-│     Your personal health companion       │
+│   A Personal Health Memory System        │
+│      for Indian families                 │
 │                                         │
 │     Growth • Care • Trust               │
 │                                         │
@@ -25,7 +26,7 @@
 └─────────────────────────────────────────┘
 ```
 
-**Script**: "This is Aroha AI — a personal health companion for the 153 million seniors in India managing multiple medications, a number set to double by 2050."
+**Script**: "This is Aroha AI — a Personal Health Memory System for the 153 million seniors in India and the families who care for them, a number set to double by 2050. Not another chatbot: every interaction becomes health memory that makes the next one smarter."
 
 ---
 
@@ -57,29 +58,26 @@
 
 ---
 
-## Slide 3: The Solution
+## Slide 3: The Solution — a Health Memory Layer
 
 ```
 ┌─────────────────────────────────────────┐
-│  THE SOLUTION                            │
+│  THE SOLUTION: ONE MEMORY LAYER          │
 │                                         │
-│  AROHA AI — A SINGLE SOURCE OF TRUTH    │
+│   📸 pills ─┐                            │
+│   🗂️ ABHA ──┤                            │
+│   💬 chat ──┼─►  HEALTH MEMORY  ─► Gemini │
+│   🩹 symptoms┤     LAYER          reasoning│
+│   📅 doses ─┘   (extract→timeline  → actions│
+│                  →context)              │
 │                                         │
-│  ┌─────────────────────────────────┐   │
-│  │  📸 Photo a pill → auto-scheduled│   │
-│  │  🗂️ Screenshot ABDM → profile    │   │
-│  │  💬 Chat that remembers you      │   │
-│  │  📅 Daily schedule + reminders   │   │
-│  │  🩺 One-tap doctor-visit summary │   │
-│  └─────────────────────────────────┘   │
-│                                         │
-│  Chat-first + big-text UI for seniors   │
-│  One app. Every day. Everything.        │
+│  inputs → memory → context →            │
+│  personalization → better care          │
 │                                         │
 └─────────────────────────────────────────┘
 ```
 
-**Script**: "Aroha is a single source of truth. Photograph a pill strip and it's on the calendar with a reminder. Screenshot your ABDM health record and your whole profile fills in — no typing. Chat with Aroha and it remembers everything about you. And with one tap, it prepares a summary for your doctor. Built chat-first, with big text, for people who find other apps too hard."
+**Script**: "Aroha isn't a chatbot with features bolted on — it's one memory layer. A photographed pill, an ABHA record, a logged symptom, a completed dose — everything flows into a structured health memory. Gemini reasons over that memory, not over a single message. So every interaction becomes memory, memory becomes context, context becomes personalization, and personalization improves care. That orchestration is the innovation — not any one model call."
 
 ---
 
@@ -256,9 +254,13 @@
 │  🏆 SOLVES A REAL PROBLEM               │
 │  Medication errors + scattered records  │
 │                                         │
+│  🏆 A CATEGORY, NOT A CHATBOT           │
+│  The first Personal Health Memory       │
+│  System for Indian families             │
+│                                         │
 │  🏆 MULTIMODAL DEPTH                     │
 │  One Vision pipeline → pills AND ABDM   │
-│  records. Chat + memory + schedule.     │
+│  records, all feeding one memory layer  │
 │                                         │
 │  🏆 EMOTIONAL HOOK                      │
 │  Everyone has aging parents             │
@@ -283,7 +285,7 @@
 ┌─────────────────────────────────────────┐
 │                                         │
 │           AROHA AI                       │
-│     Your personal health companion       │
+│  A Personal Health Memory System         │
 │                                         │
 │     Growth • Care • Trust               │
 │                                         │

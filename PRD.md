@@ -5,14 +5,15 @@
 | Field | Value |
 |---|---|
 | **Product Name** | Aroha AI |
+| **Category** | A Personal Health Memory System |
 | **Agent Name** | Aroha (the AI persona) |
-| **Tagline** | *Your personal health companion* |
+| **Tagline** | *A Personal Health Memory System for Indian families* |
 | **Hackathon** | FlowZint AI Hackathon 2026 — Open Innovation |
 | **Platform** | Android-first (React Native / Expo), iOS to follow |
 | **Timeline** | July 2 – July 19, 2026 (17 days) |
 | **Builder** | Solo |
-| **Core Concept** | A conversational AI that lives alongside a daily health schedule — reading medications and ABDM records via camera/screenshot, logging symptoms, and preparing doctor visits — all with persistent memory that grows with the user. |
-| **Positioning** | Reminder + logging + doctor-prep companion. **Advocates for the patient, never overrides the doctor.** No diagnosis, no prescribing, no "your medicine is wrong." |
+| **Core Concept** | A **Health Memory Layer**: every input (camera→meds, ABHA import, chat, symptoms, doses) is turned into structured health memory; Gemini reasons over that memory — not a single message — to deliver reminders, doctor summaries, and personalized help. Inputs → memory → context → personalization → better care. |
+| **Positioning** | A health-memory companion for elders and their families that remembers, organizes, and prepares for care. **Advocates for the patient, never overrides the doctor.** No diagnosis, no prescribing, no "your medicine is wrong." |
 
 ## 2. Problem Statement
 
@@ -131,7 +132,7 @@ US-24: As a caregiver, I want to receive alerts for missed critical meds.
 | ID | Feature | Description |
 |---|---|---|
 | F-01 | AI Chat | Conversational UI with chat history, Aroha personality |
-| F-02 | Persistent Memory | Remembers user details, medications, conversations across sessions |
+| F-02 | **Health Memory Layer** | The core. Three parts: **Memory Extractor** (pull structured facts/events from each interaction) → **Health Timeline** (append-only on-device log of dated health events) → **Context Builder** (assemble profile + relevant timeline into every Gemini prompt). This is what makes Aroha a memory system, not a chatbot. |
 | F-06 | Camera → Medication (HERO) | Capture photo → Gemini Vision reads → editable auto-filled form → confirm → scheduled |
 | F-07 | ABDM / Record Import | Upload ABHA/record screenshot → same Vision pipeline auto-fills profile. Import, not integration. |
 | F-03 | Daily Schedule | Day view of events; add/edit/delete; one-tap complete |

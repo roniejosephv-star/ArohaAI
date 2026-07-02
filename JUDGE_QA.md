@@ -64,12 +64,13 @@ So the honest framing is: **import, not integration.** It works on day one with 
 
 ### Q5: How does the persistent memory work?
 
-**A**: Simple and on-device:
+**A**: This is the core of the product — the **Health Memory Layer**, three on-device stages:
 
-1. **On-device store** (AsyncStorage / expo-sqlite) holds a `userProfile` (conditions, meds, routine) and recent messages
-2. On each turn, the app sends the profile + the **last ~10 messages** to the Worker, which injects them into the Gemini prompt as context
+1. **Memory Extractor** — after each interaction (chat, med capture, ABHA import, symptom log, dose completion), pull out structured facts and events.
+2. **Health Timeline** — an append-only, dated log of those events, stored on-device (expo-sqlite).
+3. **Context Builder** — before each Gemini call, assemble the profile + the relevant recent timeline entries into the prompt.
 
-So Aroha has continuity across sessions without a cloud database and without exceeding the context window. (A rolling-summary layer for very long histories is a roadmap optimization, not needed for v1.)
+So Gemini reasons over accumulated memory, not a single message — every interaction becomes memory, memory becomes context, context becomes personalization. That orchestration is the innovation; the individual model calls are commodity. All on-device, no cloud DB, and a rolling-summary compression for very long histories is a roadmap optimization.
 
 ### Q6: How do you handle offline?
 

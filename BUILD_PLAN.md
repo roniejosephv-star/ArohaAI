@@ -64,12 +64,18 @@ Confirm ALL of these work before Day 1, or Day 1 slips:
 - `expo prebuild` once → open in Android Studio → confirm a debug APK builds and runs on the emulator. **Prove the build while the app is empty.**
 - **Exit check:** log in + get one real Gemini reply on the emulator. Commit.
 
-### Jul 5 (Day 2) — Chat + Memory + minimal schedule model
-- Chat screen with history (FlatList), Firestore-backed messages per user.
-- **Memory (simplified):** a `userProfile` doc (conditions, meds, routine) + the **last ~10 messages re-injected verbatim** into every Gemini prompt. **No summarizer function in v1** — this is real memory for demo purposes and saves ~half a day.
-- **Minimal `schedule` data model NOW** (collection + a bare day-list read). ← moved forward so the hero has somewhere to write meds. Full schedule UI comes Jul 9.
+### Jul 5–6 (Day 2, ~1.5 days) — Health Memory Layer + chat + schedule model
+This is the core differentiator (the "Personal Health Memory System" claim), so it gets real build time, not a shortcut.
+- Chat screen with history (FlatList), messages stored on-device.
+- **Health Memory Layer (3 real parts, kept simple):**
+  - **Memory Extractor** — after each interaction, extract structured facts/events (one lightweight Gemini call returning JSON, or heuristic parsing for obvious ones).
+  - **Health Timeline** — append-only dated log in expo-sqlite (`{date, type, event}`).
+  - **Context Builder** — assemble `userProfile` + relevant recent timeline entries into every Gemini prompt.
+- **Minimal `schedule` data model NOW** (table + bare day-list read) ← so the hero has somewhere to write meds. Full schedule UI comes later.
 - Aroha persona: warm, plain language, short sentences.
-- **Exit check:** close & reopen app → Aroha remembers your name + a fact. Commit.
+- **Exit check:** tell Aroha a fact → reopen app → it recalls it *and* the fact shows as a Health Timeline entry (proves the memory layer, not just chat history). Commit.
+
+> Scope note: the memory layer adds ~half a day over plain memory. It's the innovation the whole pitch rests on, so it's worth it — but if it overruns, the Context Builder can start with profile + last-N and grow. Keep the Timeline real regardless; that's the honest core of the claim.
 
 ### Jul 6–8 (Days 3–5) — HERO: Vision pipeline (pill first, then ABDM)
 - **One Gemini Vision pipeline, reused** — but sequence it so quality is locked before you widen:

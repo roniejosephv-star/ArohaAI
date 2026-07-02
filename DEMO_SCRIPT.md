@@ -91,7 +91,7 @@
 **Visual**: 
 ```
 Aroha AI
-Your personal health companion
+A Personal Health Memory System for Indian families
 
 Built for FlowZint AI Hackathon 2026
 Open Innovation Category

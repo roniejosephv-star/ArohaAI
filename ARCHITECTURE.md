@@ -223,17 +223,45 @@ sequenceDiagram
     App->>Chat: "I've added Metformin to your schedule"
 ```
 
-### Flow 2: Chat Message → AI Response
+### The Health Memory Layer (core architecture)
+
+Aroha's distinguishing component. Every input runs through the same three on-device stages, so Gemini reasons over accumulated memory rather than a single message:
+
+```
+ Inputs (chat, camera→meds, ABHA import, symptoms, dose completions)
+        │
+        ▼
+ ┌─────────────────┐   extract structured facts/events from each interaction
+ │ Memory Extractor│──────────────────────────────────────────────────────┐
+ └─────────────────┘                                                       │
+        │ appends                                                          │
+        ▼                                                                  │
+ ┌─────────────────┐   append-only, dated log of health events            │
+ │ Health Timeline │   (on-device: expo-sqlite)                           │
+ └─────────────────┘                                                       │
+        │ reads                                                            │
+        ▼                                                                  │
+ ┌─────────────────┐   profile + relevant recent timeline → prompt context│
+ │ Context Builder │◄─────────────────────────────────────────────────────┘
+ └─────────────────┘
+        │ context
+        ▼
+   Worker → Gemini reasoning → personalized reply / action
+```
+
+### Flow 2: Chat Message → AI Response (through the Memory Layer)
 
 ```mermaid
 sequenceDiagram
     User->>App: Send message
-    App->>On-device store: Append message; read profile + last ~10 msgs
-    App->>Worker: POST { message, history, profile-context }
-    Worker->>Gemini: System prompt (persona+safety) + context + message
+    App->>Memory Extractor: extract facts/events from message
+    Memory Extractor->>Health Timeline: append dated entries (on-device)
+    App->>Context Builder: build context (profile + relevant timeline)
+    App->>Worker: POST { message, memory-context }
+    Worker->>Gemini: System prompt (persona+safety) + memory context + message
     Gemini->>Worker: Generate response
     Worker->>App: { reply }
-    App->>On-device store: Append reply
+    App->>Health Timeline: append reply / any new facts
     App->>User: Display Aroha's response
 ```
 
