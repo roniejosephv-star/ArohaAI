@@ -294,7 +294,7 @@ sequenceDiagram
 
 ## 4. Server (Cloudflare Worker)
 
-One Worker (`aroha-proxy`) holds the Gemini key and exposes a single POST endpoint. The app sends an `intent` (or the Worker infers from payload) and gets structured JSON back. All "functions" are handlers inside this one Worker — there is no Firebase.
+One Worker (`aroha-proxy`) holds the Gemini key and exposes a single POST endpoint. The app sends an `intent` (or the Worker infers from payload) and gets structured JSON back. All "functions" are handlers inside this one Worker.
 
 | Handler | Input (POST body) | Output | Purpose |
 |---|---|---|---|
@@ -319,19 +319,7 @@ The Worker always injects Aroha's persona + hard safety rules ("advocate, never 
 
 ### Roadmap — cloud sync security (when accounts ship)
 
-The planned sync approach is **Google Sign-In + the user's own Google Drive** (`appDataFolder`): the app backs up a JSON snapshot to the user's Drive and restores it on a new device. This keeps the "we store nothing" posture — health data lives on the device and in the user's own Drive, never in a database we run. If a managed cloud store is added later, per-user isolation would be enforced at the storage layer (e.g. row/collection-level auth). Draft rules for that alternative future model:
-
-```javascript
-// ROADMAP — applies only once cloud sync + auth exist. Not in MVP.
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}
-```
+The planned sync approach is **Google Sign-In + the user's own Google Drive** (`appDataFolder`): the app backs up a JSON snapshot to the user's Drive and restores it on a new device. This keeps the "we store nothing" posture — health data lives on the device and in the user's own Drive, never in a database we run.
 
 ## 6. Key Libraries & Dependencies
 

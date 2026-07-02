@@ -198,7 +198,7 @@ The app is running as an installed APK on a real Android device during the demo.
 
 ### Q19: How do you handle users with no internet?
 
-**A**: Viewing works offline via Firestore's default read cache — the last-loaded schedule and medication list are visible with no connection, behind an offline banner. AI features (chat, camera, ABDM import) require internet. Offline *writes* (marking items complete while offline, then syncing) are a roadmap item — we don't claim it for v1.
+**A**: Data lives on-device in AsyncStorage / expo-sqlite, so the app works fully offline by default — schedule, medications, and profile are always available. Only AI features (chat, camera, ABDM import) need internet. An offline banner shows when AI features are unavailable. Offline *writes* (marking items complete while offline, then syncing) are a roadmap item — we don't claim it for v1.
 
 ### Q20: What stops someone from sharing health data inappropriately?
 

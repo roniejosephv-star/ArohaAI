@@ -36,7 +36,7 @@ Scope mirrors PRD §5 tiers. Cut from the bottom, never the top.
 |---|---|---|
 | Framework | Expo (SDK 52+) + Expo Router + TypeScript | Most-represented in training data = best codegen |
 | Build | `expo prebuild` → Android Studio (Gradle) | Local APK, no EAS/signing pain for Android |
-| Auth + DB | Firebase Auth + Firestore | Email login is enough for demo; skip Google OAuth first pass |
+| Auth | None (single-device MVP) | No login — app opens straight to chat. Roadmap: Google Sign-In + Drive backup |
 | AI | Gemini 1.5 Flash (Vision + Text) | Call from a thin Cloud Function OR Expo API route — **never ship the key in the client** |
 | Camera | expo-camera / expo-image-picker | Hero feature — spend real time here |
 | Notifications | expo-notifications (local) | Local reminders only; skip push/FCM for demo |
@@ -48,7 +48,7 @@ Scope mirrors PRD §5 tiers. Cut from the bottom, never the top.
 
 Confirm ALL of these work before Day 1, or Day 1 slips:
 - Node LTS + `npx` working; Android Studio with an SDK + a running **emulator image** (you have Android Studio — verify an AVD actually boots).
-- **Firebase project** created: Auth (email/password) + Firestore enabled.
+
 - **Gemini API key with billing enabled** — the free tier will rate-limit you mid-demo. Store it for server-side use only.
 - Git repo initialized; `.gitignore` excludes `.env`.
 - **ABDM/ABHA test data:** at least one realistic health-record screenshot to test the import flow. If you don't have a real ABHA record, make a convincing mock — otherwise your hero's second flow has nothing to demo.
@@ -59,10 +59,10 @@ Confirm ALL of these work before Day 1, or Day 1 slips:
 
 ### Jul 4 (Day 1) — Foundation + first Gemini response
 - `npx create-expo-app`, Expo Router + TS, tab layout shell.
-- Firebase Auth (email/password) + minimal login screen.
+
 - Gemini call **server-side** (Cloud Function or API route) → one text reply rendering in a chat bubble.
 - `expo prebuild` once → open in Android Studio → confirm a debug APK builds and runs on the emulator. **Prove the build while the app is empty.**
-- **Exit check:** log in + get one real Gemini reply on the emulator. Commit.
+- **Exit check:** type a message → get a real Gemini reply on the emulator. Commit.
 
 ### Jul 5–6 (Day 2, ~1.5 days) — Health Memory Layer + chat + schedule model
 This is the core differentiator (the "Personal Health Memory System" claim), so it gets real build time, not a shortcut.
@@ -110,7 +110,7 @@ This is the core differentiator (the "Personal Health Memory System" claim), so 
 ### Jul 14–15 (Days 11–12) — Elderly-UX polish + real APK
 - 18px+ base font, high contrast, 44pt+ touch targets, big buttons, minimal nav.
 - Loading/empty/error states everywhere (elderly users panic at blank screens).
-- **Offline check (verify, don't build):** confirm Firestore's default read cache shows last-loaded schedule/meds with network off + an offline banner. A truthfulness check on existing SDK behavior — NOT a new feature.
+- **Offline check (verify, don't build):** confirm on-device storage (AsyncStorage / expo-sqlite) shows the last-loaded schedule/meds with network off. Data lives on the phone, so it works offline by default. Show an offline banner for AI features.
 - `expo prebuild --clean` → **release APK** in Android Studio → install on a **real phone** → run the full happy path.
 - **Exit check:** APK installs and runs the whole demo path on a physical device. Commit + tag.
 
@@ -133,7 +133,6 @@ This is the core differentiator (the "Personal Health Memory System" claim), so 
 
 ## Where vibecoding will fight you (budget extra time)
 
-- **Firebase auth + Firestore rules** — AI often generates outdated v8 syntax; force it to use modular v10.
 - **Camera permissions on Android** — prebuild config + `app.json` permissions; codegen frequently forgets these.
 - **expo-notifications on a prebuilt (non-Expo-Go) app** — behaves differently than in Expo Go; test on the real build.
 - **Gemini key exposure** — AI will happily hardcode it in the client. Keep it server-side, always.

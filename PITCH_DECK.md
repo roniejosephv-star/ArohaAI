@@ -128,11 +128,11 @@
 │  └──────────┘  └────────────────────┘  │
 │                                         │
 │  ┌──────────┐  ┌────────────────────┐  │
-│  │ BACKEND   │  │  KEY DEPTH         │  │
-│  │ Firebase  │  │  ONE Vision        │  │
-│  │ Auth,     │  │  pipeline →        │  │
-│  │ Firestore,│  │  pills + ABDM      │  │
-│  │ Functions │  │  records           │  │
+│  │ DATA      │  │  KEY DEPTH         │  │
+│  │ On-device │  │  ONE Vision        │  │
+│  │ storage   │  │  pipeline →        │  │
+│  │ (no cloud │  │  pills + ABDM      │  │
+│  │  DB)      │  │  records           │  │
 │  └──────────┘  └────────────────────┘  │
 │                                         │
 │  Android-first (iOS to follow)          │
@@ -142,7 +142,7 @@
 └─────────────────────────────────────────┘
 ```
 
-**Script**: "Built on React Native with Expo, Android-first with a local build we can install and demo. Google Gemini 1.5 Flash powers the AI — one Vision pipeline reads both pill strips and ABDM record screenshots. Firebase handles auth, real-time data, and reminders. The Gemini key lives server-side in a Cloud Function, never in the app. Serverless means zero ops for a solo builder shipping in 17 days."
+**Script**: "Built on React Native with Expo, Android-first with a local build we can install and demo. Google Gemini 1.5 Flash powers the AI — one Vision pipeline reads both pill strips and ABDM record screenshots. All health data stays on the device — private by default, no cloud database. The Gemini key lives server-side in a Cloudflare Worker, never in the app. Serverless means zero ops for a solo builder shipping in 17 days."
 
 ---
 
