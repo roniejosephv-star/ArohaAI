@@ -29,7 +29,7 @@
 
 ### The Solution
 
-**Aroha AI**: An interactive AI chat with an integrated daily schedule. The user talks to Aroha, Aroha reads medications (pill photo) and health records (ABDM screenshot) into a single profile, manages the schedule with reminders, logs symptom photos, prepares doctor-visit summaries, and remembers everything — building a lifelong health companion. It **advocates for the patient; it never overrides the doctor.**
+**Aroha AI**: An interactive AI chat with an integrated daily schedule. The user talks to Aroha, Aroha reads medications (pill photo) and health records (ABDM screenshot) into a single profile, manages the schedule with reminders, logs symptom photos, prepares doctor-visit summaries, and turns every interaction into structured memory — building a lifelong health memory that makes each interaction smarter. It **advocates for the patient; it never overrides the doctor.**
 
 > ¹ [UNFPA India Ageing Report](https://india.unfpa.org/en/news/india-ageing-elderly-make-20-population-2050-unfpa-report) · ² [WHO SAGE2 study](https://pmc.ncbi.nlm.nih.gov/articles/PMC10603298/) · ³ [PIB — 90 crore ABHA](https://www.pib.gov.in/PressReleasePage.aspx?PRID=2266979&reg=3&lang=1)
 

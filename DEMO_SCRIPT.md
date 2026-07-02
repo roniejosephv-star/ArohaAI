@@ -97,4 +97,4 @@ Built for FlowZint AI Hackathon 2026
 Open Innovation Category
 ```
 
-**Audio**: > "Aroha AI — because everyone deserves a health companion."
+**Audio**: > "Aroha AI — a Personal Health Memory System, because everyone deserves care that remembers them."

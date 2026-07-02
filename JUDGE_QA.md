@@ -9,7 +9,7 @@
 
 ### Q1: How is this different from Apple Health or Google Fit?
 
-**A**: Those are fitness dashboards that track steps, heart rate, and sleep. Aroha is a conversational health companion. Key differences:
+**A**: Those are fitness dashboards that track steps, heart rate, and sleep. Aroha is a Personal Health Memory System. Key differences:
 
 1. **Chat-first interface** — not a dashboard. Users talk to Aroha naturally
 2. **Medication management** — Apple Health doesn't read a pill strip and schedule it
