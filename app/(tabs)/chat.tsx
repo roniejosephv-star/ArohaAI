@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -11,17 +11,39 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { sendToAroha, ChatMessage } from '@/lib/aroha';
+import { sendToAroha } from '@/lib/aroha';
+import { saveMessages, loadMessages, ChatMessage } from '@/lib/storage';
+import { addEntry } from '@/memory/timeline';
+import { buildTimelineEvents } from '@/memory/extractor';
+import { buildContext } from '@/memory/contextBuilder';
+
+const WELCOME: ChatMessage = {
+  role: 'assistant',
+  content: 'Hello! I am Aroha. How are you feeling today?',
+};
 
 export default function Chat() {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'assistant', content: 'Hello! I am Aroha. How are you feeling today?' },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [ready, setReady] = useState(false);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const listRef = useRef<FlatList>(null);
 
-  const onSend = async () => {
+  useEffect(() => {
+    (async () => {
+      const saved = await loadMessages();
+      setMessages(saved.length > 0 ? saved : [WELCOME]);
+      setReady(true);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (ready && messages.length > 0) {
+      saveMessages(messages);
+    }
+  }, [messages, ready]);
+
+  const onSend = useCallback(async () => {
     const text = input.trim();
     if (!text || busy) return;
 
@@ -31,22 +53,44 @@ export default function Chat() {
     setBusy(true);
 
     try {
-      const reply = await sendToAroha(text, messages);
-      setMessages([...nextHistory, { role: 'assistant', content: reply }]);
-    } catch (e: any) {
-      setMessages([
+      const context = await buildContext();
+      const reply = await sendToAroha(text, messages, context);
+      const withReply: ChatMessage[] = [...nextHistory, { role: 'assistant', content: reply }];
+      setMessages(withReply);
+
+      const events = buildTimelineEvents(text, reply);
+      for (const ev of events) {
+        addEntry({
+          date: new Date().toISOString(),
+          type: ev.type,
+          event: ev.event,
+        });
+      }
+    } catch {
+      const errorReply: ChatMessage[] = [
         ...nextHistory,
         {
           role: 'assistant',
           content:
             'Sorry, I could not reach my brain just now. Please check your connection and try again.',
         },
-      ]);
+      ];
+      setMessages(errorReply);
     } finally {
       setBusy(false);
       setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 50);
     }
-  };
+  }, [input, busy, messages]);
+
+  if (!ready) {
+    return (
+      <SafeAreaView style={styles.safe} edges={['bottom']}>
+        <View style={styles.centered}>
+          <ActivityIndicator color="#0E7C7B" />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
@@ -103,6 +147,7 @@ export default function Chat() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#fff' },
   flex: { flex: 1 },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   list: { padding: 16, gap: 12 },
   bubble: { maxWidth: '85%', borderRadius: 18, padding: 14 },
   userBubble: { alignSelf: 'flex-end', backgroundColor: '#0E7C7B' },

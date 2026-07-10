@@ -1,18 +1,13 @@
-export type ChatMessage = {
-  role: 'user' | 'assistant';
-  content: string;
-};
+import { ChatMessage } from './storage';
 
-// URL of your deployed Cloudflare Worker (set in .env). The Gemini key lives
-// only in the worker — never in this app.
 const API_URL = process.env.EXPO_PUBLIC_AROHA_API_URL;
 
-/**
- * Sends a message to Aroha via the server-side proxy (Cloudflare Worker).
- */
+export type { ChatMessage };
+
 export async function sendToAroha(
   message: string,
-  history: ChatMessage[] = []
+  history: ChatMessage[] = [],
+  context?: string
 ): Promise<string> {
   if (!API_URL) {
     throw new Error(
@@ -23,7 +18,12 @@ export async function sendToAroha(
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, history }),
+    body: JSON.stringify({
+      intent: 'chat',
+      message,
+      history,
+      context,
+    }),
   });
 
   if (!res.ok) {
@@ -35,4 +35,30 @@ export async function sendToAroha(
     throw new Error(data.error || 'No reply from Aroha.');
   }
   return data.reply;
+}
+
+export async function analyzeImage(
+  imageBase64: string,
+  mimeType: string,
+  intent: 'analyzeMedication' | 'analyzeRecord'
+): Promise<Record<string, unknown>> {
+  if (!API_URL) {
+    throw new Error('EXPO_PUBLIC_AROHA_API_URL is not set.');
+  }
+
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ intent, image: imageBase64, mimeType }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Analysis failed (${res.status}).`);
+  }
+
+  const data = await res.json();
+  if (data.error) {
+    throw new Error(data.error);
+  }
+  return data;
 }
