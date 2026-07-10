@@ -13,6 +13,10 @@ export default function TabsLayout() {
         name="chat"
         options={{ title: 'Aroha', tabBarLabel: 'Chat' }}
       />
+      <Tabs.Screen
+        name="schedule"
+        options={{ title: 'Schedule', tabBarLabel: 'Schedule' }}
+      />
     </Tabs>
   );
 }

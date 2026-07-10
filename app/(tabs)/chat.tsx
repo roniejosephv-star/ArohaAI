@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import { sendToAroha } from '@/lib/aroha';
 import { saveMessages, loadMessages, ChatMessage } from '@/lib/storage';
 import { addEntry } from '@/memory/timeline';
@@ -127,6 +128,12 @@ export default function Chat() {
         )}
 
         <View style={styles.inputRow}>
+          <Pressable
+            style={styles.camBtn}
+            onPress={() => router.push('/add-medication')}
+          >
+            <Text style={styles.camText}>📷</Text>
+          </Pressable>
           <TextInput
             style={styles.input}
             placeholder="Type a message…"
@@ -182,4 +189,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   sendText: { color: '#fff', fontSize: 18, fontWeight: '700' },
+  camBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+  },
+  camText: { fontSize: 24 },
 });
