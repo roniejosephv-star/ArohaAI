@@ -13,7 +13,7 @@
 
 1. **Chat-first interface** — not a dashboard. Users talk to Aroha naturally
 2. **Medication management** — Apple Health doesn't read a pill strip and schedule it
-3. **Camera + screenshot input** — photograph a prescription OR upload an ABDM record; one Vision pipeline reads both
+3. **Camera input** — photograph a prescription and Aroha reads it; one Vision pipeline powers medication capture
 4. **Doctor-visit prep** — one tap turns your history into a summary to take to your doctor
 5. **Persistent memory** — Aroha remembers everything about the user across sessions
 
@@ -52,21 +52,25 @@ The core utility — reminders, schedule, symptom logging — doesn't depend on 
 2. Image is sent to our **Cloudflare Worker** (which holds the Gemini key), which calls **Gemini Vision 1.5 Flash**
 3. Gemini extracts: medication name, dosage, frequency, timing, and special instructions
 
-The structured data is returned to the app, the user **confirms or edits** it, and it's saved **on-device**. Schedule entries are auto-generated and local notifications are created. The same Vision pipeline powers screenshot import (Q4b) — one pipeline, three entry points.
+The structured data is returned to the app, the user **confirms or edits** it, and it's saved **on-device**. Schedule entries are auto-generated and local notifications are created.
 
-### Q4b: Do you integrate with ABDM / ABHA?
+### Q4b: What about ABDM / ABHA integration?
 
-**A**: Not via the ABDM API — and that's a deliberate, honest choice. Real ABDM integration requires HIP/HIU registration, Consent Manager onboarding, and sandbox approval — weeks of process that doesn't fit a hackathon, and more importantly isn't needed to deliver value today.
+**A**: Great question — and honest answer: **not in v1, but planned for when adoption scales.**
 
-Instead, Aroha lets users **import their existing ABDM/ABHA records by uploading a screenshot.** The same Gemini Vision pipeline parses conditions, medications, and history and pre-fills the Health Profile (accessible from the menu). Users can also enter data manually or by voice.
+ABDM integration via the Consent Manager API requires HIP/HIU registration and sandbox approval — it's a roadmap feature, not a hackathon build. More importantly, the number of users who actively use their ABHA records in daily life is still small. Building for that tiny slice today would distract from what *everyone* needs right now: a way to get their health data into Aroha without friction.
 
-So the honest framing is: **import, not integration.** It works on day one with zero ABDM onboarding. Native ABDM linking via the Consent Manager is our roadmap item — the screenshot importer proves the parsing works, and API linking just changes the source.
+That's what our **onboarding wizard** does. In under 2 minutes, the user tells Aroha their conditions, medications, and routine — the same data ABDM would provide, but it works today for every senior, not just ABHA users. No API dependence, no waiting.
+
+**When ABDM usage reaches meaningful scale** — more patients carrying portable health records, more doctors exchanging them — we'll add native Consent Manager integration. At that point the onboarding wizard becomes the fallback, and ABDM-linked data becomes the automatic import path. Same data model, same memory layer — just a different source.
+
+So the honest framing: ABDM is on our roadmap as a natural scale-up, not as a v1 feature. We built for the 100% today, not the 1%. And when ABDM is ready for prime time, Aroha will be, too.
 
 ### Q5: How does the persistent memory work?
 
 **A**: This is the core of the product — the **Health Memory Layer**, three on-device stages:
 
-1. **Memory Extractor** — after each interaction (chat, med capture, ABHA import, symptom log, dose completion), pull out structured facts and events.
+1. **Memory Extractor** — after each interaction (chat, med capture, onboarding, symptom log, dose completion), pull out structured facts and events.
 2. **Health Timeline** — an append-only, dated log of those events, stored on-device (expo-sqlite).
 3. **Context Builder** — before each Gemini call, assemble the profile + the relevant recent timeline entries into the prompt.
 
@@ -74,7 +78,7 @@ So Gemini reasons over accumulated memory, not a single message — every intera
 
 ### Q6: How do you handle offline?
 
-**A**: Strong here, because data is **on-device by design**. Your schedule, medications, and profile are stored on the phone (AsyncStorage/expo-sqlite), so viewing *and editing* them works fully offline — no network needed. Only the AI calls (chat, camera, ABDM import) need internet, since those hit the Worker → Gemini. Cloud sync across devices is roadmap, not MVP.
+**A**: Strong here, because data is **on-device by design**. Your schedule, medications, and profile are stored on the phone (AsyncStorage/expo-sqlite), so viewing *and editing* them works fully offline — no network needed. Only the AI calls (chat, camera) need internet, since those hit the Worker → Gemini. Android Auto Backup to Google Drive is built-in at the platform level for cross-device restore.
 
 ### Q7: What's the tech stack and why?
 
@@ -82,7 +86,7 @@ So Gemini reasons over accumulated memory, not a single message — every intera
 - **React Native (Expo 52), Android-first** — one codebase, iOS to follow; local APK via `expo prebuild` + Android Studio (no EAS dependency for the demo)
 - **Cloudflare Worker** — a ~30-line serverless proxy that holds the Gemini key. Free tier, no billing card, deploys in minutes. Keeps the key off the device and out of the public repo.
 - **On-device storage** (AsyncStorage / expo-sqlite) — no cloud DB in the MVP; data stays on the phone, which also makes offline real
-- **Gemini 1.5 Flash** — fastest multimodal model, generous free tier, Vision + Text; **one pipeline reads both pill strips and ABDM records**
+- **Gemini 1.5 Flash** — fastest multimodal model, generous free tier, Vision + Text; **one pipeline reads pill strips and schedules them**
 - **expo-notifications** — local reminders; **expo-speech** — TTS for Smart Mode (stretch)
 
 Deliberately minimal: one tiny server (just for the key) and everything else on-device — the least infrastructure that keeps the key safe, ideal for a solo builder shipping in ~2 weeks.
@@ -90,13 +94,12 @@ Deliberately minimal: one tiny server (just for the key) and everything else on-
 ### Q8: How is the app structured?
 
 **A**: Expo Router for file-based navigation:
-- `(auth)/` — Login and signup screens
+- `onboarding/` — Step-by-step setup wizard
 - `(tabs)/chat/` — Main chat screen with today's schedule
 - `(tabs)/schedule/` — Day list of events (month grid = stretch)
 - `(modals)/add-event/` — Add/edit event form
 - `(modals)/add-medication/` — Camera → medication flow
-- `(modals)/import-records/` — ABDM/record screenshot → profile
-- `profile/` — Health profile (incl. ABDM-imported data), medications list, memory settings
+- `(tabs)/profile/` — Health profile, medications list, memory settings
 - `settings/` — notifications, language; Smart Mode toggle (stretch)
 
 ---
@@ -113,7 +116,7 @@ Key insight: the end user (elderly person) may not pay, but their children will.
 
 **A**: Three-tier:
 *(Pricing below is illustrative — a planning assumption, not validated pricing.)*
-1. **B2C Freemium** — Basic tracking free (schedule, medications list, reminders). Premium ~₹99/month (AI chat, camera capture, ABDM import, doctor summaries; caregiver dashboard when it ships)
+1. **B2C Freemium** — Basic tracking free (schedule, medications list, reminders). Premium ~₹99/month (AI chat, camera capture, doctor summaries; caregiver dashboard when it ships)
 2. **B2B Corporate** — ~₹50/employee/month. Companies offer Aroha as an employee parent benefit. *(Roadmap — requires the caregiver/admin dashboard.)*
 3. **Pharma** — ~₹10/patient/month. Patient adherence programs. *(Roadmap.)*
 
@@ -127,7 +130,7 @@ Key insight: the end user (elderly person) may not pay, but their children will.
 
 ### Q12: How big is the market?
 
-**A**: India alone has **153 million people aged 60+ (2025), doubling to 347 million by 2050** ([UNFPA](https://india.unfpa.org/en/news/india-ageing-elderly-make-20-population-2050-unfpa-report)). The **India geriatric healthcare market was ~USD 42.2B in 2024, projected to ~USD 97.3B by 2033** at ~9% CAGR ([IMARC](https://www.imarcgroup.com/india-geriatric-healthcare-market)). And **900M+ ABHA/ABDM health accounts already exist** ([PIB](https://www.pib.gov.in/PressReleasePage.aspx?PRID=2266979&reg=3&lang=1)) — a ready base of importable digital health records unique to our approach. India is our beachhead; the expansion runway is Asia-Pacific, which already holds **722M people aged 60+ (2024), heading to ~1.3B by 2050** — ~60% of the world's older persons ([UN ESCAP](https://www.unescap.org/sites/default/files/SDD%20Ageing%20Fact%20Sheet%20Overview.pdf)). We lead with India because that's where ABDM — and our import feature — actually works today. (Figures sourced; earlier "$50B / 600M APAC" claims were unverified and have been replaced.)
+**A**: India alone has **153 million people aged 60+ (2025), doubling to 347 million by 2050** ([UNFPA](https://india.unfpa.org/en/news/india-ageing-elderly-make-20-population-2050-unfpa-report)). The **India geriatric healthcare market was ~USD 42.2B in 2024, projected to ~USD 97.3B by 2033** at ~9% CAGR ([IMARC](https://www.imarcgroup.com/india-geriatric-healthcare-market)). And **900M+ ABHA digital health accounts already exist** ([PIB](https://www.pib.gov.in/PressReleasePage.aspx?PRID=2266979&reg=3&lang=1)) — representing a population already comfortable with digital health. India is our beachhead; the expansion runway is Asia-Pacific, which already holds **722M people aged 60+ (2024), heading to ~1.3B by 2050** — ~60% of the world's older persons ([UN ESCAP](https://www.unescap.org/sites/default/files/SDD%20Ageing%20Fact%20Sheet%20Overview.pdf)). (Figures sourced; earlier "$50B / 600M APAC" claims were unverified and have been replaced.)
 
 ---
 
@@ -146,7 +149,7 @@ Key insight: the end user (elderly person) may not pay, but their children will.
 ### Q14: What's your moat?
 
 **A**: 
-1. **Data network effects** — As users import records and log symptoms, Aroha gets better at parsing messy real-world prescriptions and records. More users = more accurate extraction
+1. **Data network effects** — As users log medications and symptoms, Aroha gets better at parsing messy real-world prescriptions. More users = more accurate extraction
 2. **Persistent memory** — The longer a user stays, the more Aroha knows them. High switching cost
 3. **B2B relationships** — Enterprise contracts create lock-in (HR systems integration, employee data)
 4. **Regulatory** — Health data is highly regulated. First-mover advantage in compliance
@@ -157,16 +160,16 @@ Key insight: the end user (elderly person) may not pay, but their children will.
 
 ### Q15: What's the most impressive thing in your demo?
 
-**A**: Two moments, both powered by the same Vision pipeline:
+**A**: One moment stands out:
 
-1. **Camera → medication** — "Take a photo of this pill strip. In 5 seconds, Aroha reads it as Metformin 500mg, twice daily after meals, adds it to the calendar, and sets a reminder. That's multimodal AI solving a real daily problem."
+**Camera → medication** — "Take a photo of this pill strip. In 5 seconds, Aroha reads it as Metformin 500mg, twice daily after meals, adds it to the calendar, and sets a reminder. That's multimodal AI solving a real daily problem that no chatbot in this room does."
 
-2. **ABDM record → instant profile** — "Upload a screenshot of your ABHA health record. Aroha reads your conditions and medications and fills your whole health profile in seconds — no typing, no ABDM integration, no waiting. A senior is set up in under a minute." (This is the differentiator no team-of-four chatbot will have.)
+And underpinning it all is the **Health Memory Layer** — every interaction becomes structured memory so Aroha remembers you across sessions. ABDM/ABHA integration is the natural next step when adoption scales — the data model is ready, the connection is roadmap.
 
 ### Q16: How much of this is built vs mock/prototype?
 
 **A**: For the demo video, all flows shown work end-to-end with real data:
-- Real Gemini API calls (via the Worker) for camera analysis, ABDM import, and chat
+- Real Gemini API calls (via the Worker) for camera analysis and chat
 - Real on-device persistence (AsyncStorage/expo-sqlite)
 - Real local notifications via expo-notifications
 - Voice (TTS) if the stretch feature is completed
@@ -198,7 +201,7 @@ The app is running as an installed APK on a real Android device during the demo.
 
 ### Q19: How do you handle users with no internet?
 
-**A**: Data lives on-device in AsyncStorage / expo-sqlite, so the app works fully offline by default — schedule, medications, and profile are always available. Only AI features (chat, camera, ABDM import) need internet. An offline banner shows when AI features are unavailable. Offline *writes* (marking items complete while offline, then syncing) are a roadmap item — we don't claim it for v1.
+**A**: Data lives on-device in AsyncStorage / expo-sqlite, so the app works fully offline by default — schedule, medications, and profile are always available. Only AI features (chat, camera) need internet. An offline banner shows when AI features are unavailable. Offline *writes* (marking items complete while offline, then syncing) are a roadmap item — we don't claim it for v1.
 
 ### Q20: What stops someone from sharing health data inappropriately?
 
@@ -210,7 +213,7 @@ The app is running as an installed APK on a real Android device during the demo.
 1. **Data stays on-device** — health records, meds, and symptoms live only on the phone. The only thing sent to Google is the specific text/image needed for a single inference; nothing is stored in a cloud DB of ours.
 2. **Processing, not training** — prompts/images go to the Gemini API for inference only; we use tier terms where data isn't used to train models.
 3. **Key never on the device** — the Gemini key lives only in the Cloudflare Worker (as a secret); the app and the public repo never contain it.
-4. **Roadmap** — an on-device / India-hosted model for PHI, and full ABDM Consent-Manager flows, are the next privacy steps.
+4. **Roadmap** — an on-device / India-hosted model for PHI is the next privacy step, alongside native ABDM Consent Manager integration (when adoption scales) and Google Sign-In + Drive backup so users own their data.
 
 We don't overclaim compliance — we're a prototype. But "data stays on the device, key stays on the server" is a genuinely strong privacy posture, not a retrofit.
 

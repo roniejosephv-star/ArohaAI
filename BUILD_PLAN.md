@@ -22,11 +22,11 @@
 
 Scope mirrors PRD §5 tiers. Cut from the bottom, never the top.
 
-- **CORE (must demo):** Auth · AI Chat + Persistent Memory · Camera → Medication (HERO) · ABDM/Record Import · Daily Schedule · Local Notifications
-- **P1 (strong to have):** Onboarding · Symptom Photo Log · Doctor Visit Summary · Streak
-- **STRETCH (only if ahead):** Voice/Smart Mode · Health Q&A (info + disclaimer, no interaction claims) · Advanced recurrence (beyond daily) · Refill Alert · Google sign-in
+- **CORE (must demo):** Auth · Onboarding · AI Chat + Persistent Memory · Camera → Medication (HERO) · Daily Schedule · Local Notifications
+- **P1 (strong to have):** Symptom Photo Log · Doctor Visit Summary · Streak · Android Auto Backup (Google Drive)
+- **STRETCH (only if ahead):** Voice/Smart Mode · Health Q&A (info + disclaimer, no interaction claims) · Advanced recurrence (beyond daily) · Refill Alert · Google Sign-In + Drive API backup
 
-**Roadmap (NOT built in v1):** Google Sign-In + backup/restore to the user's own Google Drive (`appDataFolder`) · Caregiver dashboard · Drug-interaction / prescription-review advocate · Rash/symptom → action guide · B2B/pharma · native ABDM linking. These are the north-star vision (PRD §5b), labeled as future everywhere.
+**Roadmap (NOT built in v1):** Google Sign-In + Drive API backup (`appDataFolder`) · Caregiver dashboard · Drug-interaction / prescription-review advocate · Rash/symptom → action guide · B2B/pharma · **Native ABDM (Consent Manager) integration** — planned for when ABDM adoption reaches meaningful scale. The onboarding wizard in v1 captures the same data (conditions, medications, routine) for every user today, and ABDM becomes an automatic import path on top of the same data model. These are the north-star vision (PRD §5b), labeled as future everywhere.
 
 ---
 
@@ -51,7 +51,7 @@ Confirm ALL of these work before Day 1, or Day 1 slips:
 
 - **Gemini API key with billing enabled** — the free tier will rate-limit you mid-demo. Store it for server-side use only.
 - Git repo initialized; `.gitignore` excludes `.env`.
-- **ABDM/ABHA test data:** at least one realistic health-record screenshot to test the import flow. If you don't have a real ABHA record, make a convincing mock — otherwise your hero's second flow has nothing to demo.
+- **Test user data:** prepare a clear mock pill strip (Metformin or similar) for the camera→med hero demo.
 
 ---
 
@@ -77,13 +77,12 @@ This is the core differentiator (the "Personal Health Memory System" claim), so 
 
 > Scope note: the memory layer adds ~half a day over plain memory. It's the innovation the whole pitch rests on, so it's worth it — but if it overruns, the Context Builder can start with profile + last-N and grow. Keep the Timeline real regardless; that's the honest core of the claim.
 
-### Jul 6–8 (Days 3–5) — HERO: Vision pipeline (pill first, then ABDM)
-- **One Gemini Vision pipeline, reused** — but sequence it so quality is locked before you widen:
+### Jul 6–8 (Days 3–5) — HERO: Vision pipeline + Onboarding
+- **Gemini Vision pipeline:**
   - **Jul 6–7: Pill strip photo → med.** Parse name/dose/frequency → editable form → confirm → writes to the schedule model. Make this *flawless*: blurry photo, unreadable strip, permission denied all degrade gracefully to "edit manually." Test 5+ real strips.
-  - **Jul 8: ABDM/ABHA screenshot → profile.** Reuse the same pipeline; parse conditions/meds/history → editable review → confirm → populates Health Profile. ABDM screenshots are denser/messier — **budget this as the thing most likely to overrun.** If pill→med isn't solid by end of Jul 7, ABDM slips to the Jul 13 overflow day.
-- Every parse pre-fills an **editable** form; user confirms before save. Never auto-commit.
-- **Framing:** "import your ABDM/ABHA records via screenshot," NOT "ABDM integrated."
-- **Exit check:** (a) pill photo → confirmed med → on today's schedule; (b) ABDM screenshot → confirmed → in Health Profile. Commit after each.
+  - Every parse pre-fills an **editable** form; user confirms before save. Never auto-commit.
+- **Jul 8: Onboarding wizard.** Multi-step: Welcome → Name → Age → Conditions → Medications → Routine → saves profile → Aroha greets by name in chat. Uses the existing `UserProfile` model in storage.ts.
+- **Exit check:** (a) pill photo → confirmed med → on today's schedule; (b) fresh install → onboarding → profile saved → Aroha references user's name in chat. Commit after each.
 
 ### Jul 9 (Day 6) — Schedule UI + Local Notifications
 - Day-view list of today's events (meds, meals, custom); one-tap "mark done" (this feeds adherence for the doctor summary).
@@ -91,9 +90,8 @@ This is the core differentiator (the "Personal Health Memory System" claim), so 
 - expo-notifications local reminders at event times.
 - **Exit check:** schedule a med 2 min out → notification fires → tap done. Commit.
 
-### Jul 10–11 (Days 7–8) — Onboarding + Symptom Log + Streak
-- Onboarding: name/age → conditions → meds (camera or manual) → routine.
-- **Symptom Photo Log** (moved BEFORE the summary so it has data): photo/gallery → Gemini describes → timestamped log entry.
+### Jul 10–11 (Days 7–8) — Symptom Log + Streak + Android Auto Backup
+- **Symptom Photo Log**: photo/gallery → Gemini describes → timestamped log entry.
 - Streak counter + celebration message.
 - **Exit check:** fresh install → full onboarding → log a symptom → it appears in history. Commit.
 
@@ -103,7 +101,7 @@ This is the core differentiator (the "Personal Health Memory System" claim), so 
 - **Exit check:** summary generates from actual logged data, not placeholders. Commit.
 
 ### Jul 13 (Day 10) — Overflow / Stretch buffer
-- **First priority: absorb any hero/ABDM overrun.** If Jul 8 slipped, finish ABDM here.
+- **First priority: absorb any hero/onboarding overrun.**
 - If genuinely ahead: **Voice TTS** (expo-speech reads replies aloud — reads as "voice mode" on video) and/or **Health Q&A** (info + source + disclaimer, NO interaction claims). Both droppable.
 - **Do not start anything you can't finish today.**
 
@@ -115,11 +113,11 @@ This is the core differentiator (the "Personal Health Memory System" claim), so 
 - **Exit check:** APK installs and runs the whole demo path on a physical device. Commit + tag.
 
 ### Jul 16 (Day 13) — BUFFER / hardening
-- Fix whatever's flaky. Re-test the hero on 5+ pill strips + your ABDM screenshot until it never crashes.
+- Fix whatever's flaky. Re-test the hero on 5+ pill strips until it never crashes.
 - No new features. This day exists to absorb slippage — protect it.
 
 ### Jul 17 (Day 14) — Demo video + assets
-- Record the **locked ~2:10 arc** (see DEMO_SCRIPT.md): Problem → Meet Aroha + memory → HERO camera→med → **ABDM import → personal summary** → doctor summary → vision close. Lead with the hero in the first 20s.
+- Record the **locked ~2:00 arc** (see DEMO_SCRIPT.md): Problem → Onboarding + Memory → HERO camera→med → Schedule → Doctor summary → vision close. Lead with the hero in the first 20s.
 - Screenshots per SUBMISSION_CHECKLIST; update docs to match what actually shipped.
 - Confirm demo video URL + repo are public (test in incognito).
 
@@ -139,7 +137,7 @@ This is the core differentiator (the "Personal Health Memory System" claim), so 
 
 ## If you're behind by Jul 12
 
-Ship exactly this and it still wins on depth: **Onboarding → Chat+Memory → Camera→Med → ABDM Import → Schedule+Reminders → Doctor Summary.** Six polished slices beat twelve half-working ones. Drop (in order): Health Q&A → Voice → symptom log → streak. Never sacrifice the hero (camera→med) or ABDM import — they're the whole differentiation.
+Ship exactly this and it still wins on depth: **Onboarding → Chat+Memory → Camera→Med → Schedule+Reminders → Doctor Summary.** Five polished slices beat twelve half-working ones. Drop (in order): Health Q&A → Voice → symptom log → streak. Never sacrifice the hero (camera→med) — it's the whole differentiation.
 
 ## Extended-session reality check
 

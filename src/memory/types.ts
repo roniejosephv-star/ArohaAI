@@ -1,7 +1,7 @@
 export type TimelineEntry = {
   id?: number;
   date: string;
-  type: 'chat' | 'medication' | 'symptom' | 'record_import' | 'dose_completed' | 'fact_learned';
+  type: 'chat' | 'medication' | 'symptom' | 'onboarding' | 'dose_completed' | 'fact_learned';
   event: string;
   metadata?: string;
 };

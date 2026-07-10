@@ -36,13 +36,12 @@
 - [ ] **Persistent Memory**: Aroha recalls user details after app restart
 - [ ] **Camera → Medication (HERO)**: Photo → Gemini reads → editable form → confirm → scheduled
 - [ ] **Camera → Medication**: Graceful fallback to manual entry if Gemini fails
-- [ ] **ABDM / Record Import**: Screenshot → Gemini extracts → editable review → confirm → profile fills
+- [ ] **Onboarding**: Step-by-step wizard → profile saves → Aroha greets user by name
 - [ ] **Schedule**: Day view shows events; one-tap complete; add/edit/delete
 - [ ] **Notifications**: Local reminder fires at scheduled event time
 
 ### P1 Features (strong to have)
 
-- [ ] **Onboarding**: profile → conditions → medications → routine (no caregiver in v1)
 - [ ] **Symptom Photo**: Take/upload photo → AI describes → logged with timestamp
 - [ ] **Doctor-Visit Summary**: One tap → symptoms + adherence + questions to ask
 - [ ] **Streak**: Adherence streak + celebration message
@@ -84,13 +83,13 @@
 - [ ] Screen recording: Clean (no unnecessary notifications, dark mode consistent)
 - [ ] Script followed: See `DEMO_SCRIPT.md`
 - [ ] Edited: Smooth transitions, no dead air
-- [ ] Total runtime ~2:10 (LOCKED arc — see DEMO_SCRIPT.md)
+- [ ] Total runtime ~2:00 (LOCKED arc — see DEMO_SCRIPT.md)
 - [ ] Opening hook: Problem statement (0:00-0:15)
-- [ ] Meet Aroha + memory recall; calendar as a 2-sec flash only (0:15-0:35)
-- [ ] WOW moment #1 (HERO): Camera → medication (0:35-1:05)
-- [ ] WOW moment #2: ABDM import → filled Personal Summary payoff shot (1:05-1:30)
-- [ ] Payoff beat: Doctor-visit summary (1:30-1:50)
-- [ ] Close: Vision line "advocates, never overrides" + logo (1:50-2:10)
+- [ ] Onboarding + memory recall; calendar as a 2-sec flash only (0:15-0:35)
+- [ ] WOW moment (HERO): Camera → medication (0:35-1:05)
+- [ ] Schedule + reminders beat (1:05-1:20)
+- [ ] Payoff beat: Doctor-visit summary (1:20-1:40)
+- [ ] Close: Vision line "advocates, never overrides" + logo (1:40-2:00)
 - [ ] NOT in video (still built): symptom log, Health Q&A, standalone calendar beat
 - [ ] Uploaded to YouTube (unlisted) or Google Drive
 - [ ] Link tested and working (incognito)
@@ -100,7 +99,6 @@
 - [ ] Onboarding screen
 - [ ] Chat screen with today's schedule
 - [ ] Camera → medication flow (editable result card)
-- [ ] ABDM / record import → profile filled
 - [ ] Doctor-visit summary
 - [ ] Symptom log with timestamp
 
@@ -111,7 +109,6 @@
 - [ ] 3+ pre-existing medications in the schedule
 - [ ] Today's schedule shows mix of completed and pending items
 - [ ] Printed pill strip available for camera demo
-- [ ] Sample ABDM/ABHA record screenshot in the gallery for the import demo
 - [ ] Good lighting for camera capture
 - [ ] Wi-Fi available (no cellular dependency)
 
@@ -134,13 +131,15 @@
 - [ ] **College/Organization**: [Your College/Org]
 - [ ] **City**: [Your City]
 
+> **ABDM integration** is not in v1 — it's a roadmap item for when ABDM/ABHA adoption reaches meaningful scale. The onboarding wizard (v1) captures the same data (conditions, medications, routine) for every user today. See JUDGE_QA.md Q4b for the full framing.
+
 ### Project Description
 
 - [ ] **Short description** (1-2 sentences, for listing):
-  > "Aroha AI is a Personal Health Memory System for Indian elders and the families who care for them. Every interaction — a photographed pill strip, an imported ABHA record, a logged symptom, a completed dose — becomes structured health memory (Memory Extractor → Health Timeline → Context Builder) that Gemini reasons over to deliver AI medication reminders, camera → medication capture, ABDM/ABHA record import, and one-tap doctor-visit summaries. Not a chatbot — an on-device memory system where inputs become memory, memory becomes context, and context becomes personalized care."
+  > "Aroha AI is a Personal Health Memory System for Indian elders and the families who care for them. Every interaction — onboarding, a photographed pill strip, a logged symptom, a completed dose — becomes structured health memory (Memory Extractor → Health Timeline → Context Builder) that Gemini reasons over to deliver AI medication reminders, camera → medication capture, and one-tap doctor-visit summaries. Not a chatbot — an on-device memory system where inputs become memory, memory becomes context, and context becomes personalized care."
 - [ ] **Detailed description** (100-200 words, for judging):
   > Draft:
-  > "Aroha AI is a Personal Health Memory System for Indian elders and their families. The innovation isn't any single model call — it's the Health Memory Layer that orchestrates them: every interaction runs through a Memory Extractor → Health Timeline → Context Builder, so Gemini reasons over accumulated memory, not one message. Inputs become memory, memory becomes context, context becomes personalized care. Today that memory delivers real value through one Gemini Vision pipeline serving two jobs: photograph a pill strip and Aroha reads the medication, dosage, and timing and schedules it with a reminder; or upload a screenshot of your ABDM/ABHA record and Aroha auto-fills your health profile — import, not a months-long integration. Users log symptom photos, and one tap generates a doctor-visit summary of symptoms, adherence, and questions to ask. Built with React Native (Expo, Android-first) and Gemini. Data stays on-device; the Gemini key lives only in a Cloudflare Worker — never in the app or repo. Aroha advocates for the patient and prepares them for their doctor — it never diagnoses or overrides a physician. Roadmap: accounts + Google Drive backup, voice, native ABDM linking, prescription-review advocacy, and a caregiver dashboard."
+  > "Aroha AI is a Personal Health Memory System for Indian elders and their families. The innovation isn't any single model call — it's the Health Memory Layer that orchestrates them: every interaction runs through a Memory Extractor → Health Timeline → Context Builder, so Gemini reasons over accumulated memory, not one message. Inputs become memory, memory becomes context, context becomes personalized care. Today that memory delivers real value: an onboarding wizard learns the user's conditions, medications, and routine; the Gemini Vision pipeline reads a photographed pill strip and schedules it with a reminder; users log symptom photos; and one tap generates a doctor-visit summary of symptoms, adherence, and questions to ask. Built with React Native (Expo, Android-first) and Gemini. Data stays on-device; the Gemini key lives only in a Cloudflare Worker — never in the app or repo. Aroha advocates for the patient and prepares them for their doctor — it never diagnoses or overrides a physician. Roadmap: Google Drive backup, voice, prescription-review advocacy, and a caregiver dashboard."
 
 ### Submission Links
 
@@ -182,13 +181,12 @@
 
 Run through this complete flow one last time:
 
-1. **Fresh install** (APK) → App launches to login screen
-2. **Sign up** with email → Redirected to onboarding
-3. **Onboarding**: Name "Geeta", Age 68, Female → Conditions: BP, Diabetes, Arthritis
+1. **Fresh install** (APK) → App launches to onboarding wizard
+2. **Onboarding**: Name "Geeta", Age 68 → Conditions: BP, Diabetes, Arthritis → Meds: Metformin → Routine set
+3. **Chat screen**: Aroha greets Geeta by name, references her conditions
 4. **Camera → med (HERO)**: Show printed strip → Gemini reads → edit if needed → confirm → scheduled
-5. **ABDM import**: Upload a record screenshot → Gemini extracts → review → confirm → profile fills
-6. **Add one medication manually** (proves the fallback)
-7. **Onboarding**: Set routine — Wake 7AM, Breakfast 8AM, Lunch 1PM, Dinner 8PM
+5. **Add one medication manually** (proves the fallback)
+6. **Schedule view**: See today's events with medication + routine items
 8. **Chat screen**: See today's schedule with medications + meals
 9. **Tap to complete** a medication → count updates, Aroha responds
 10. **Memory check**: close & reopen app → Aroha still knows Geeta's name + conditions

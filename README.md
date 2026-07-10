@@ -5,7 +5,7 @@
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020)](https://workers.cloudflare.com)
 [![Gemini](https://img.shields.io/badge/Gemini-1.5_Flash-4285F4)](https://deepmind.google.com/gemini)
 
-**Aroha AI is a Personal Health Memory System** for Indian elders and the families who care for them. Every interaction — a photographed pill strip, an imported ABHA record, a logged symptom, a chat, a completed dose — becomes **structured health memory** that makes the next interaction smarter. Today that memory delivers concrete value: AI medication reminders, camera → medication capture, ABDM/ABHA record import, persistent health memory, and one-tap doctor-visit summaries.
+**Aroha AI is a Personal Health Memory System** for Indian elders and the families who care for them. Every interaction — onboarding, a photographed pill strip, a logged symptom, a chat, a completed dose — becomes **structured health memory** that makes the next interaction smarter. Today that memory delivers concrete value: AI medication reminders, camera → medication capture, persistent health memory, and one-tap doctor-visit summaries.
 
 The innovation isn't Gemini, and it isn't Vision. It's the **Health Memory Layer** that orchestrates them: inputs become memory, memory becomes context, context becomes personalization, personalization improves care.
 
@@ -16,12 +16,12 @@ The innovation isn't Gemini, and it isn't Vision. It's the **Health Memory Layer
 ### The Health Memory Layer
 
 ```
-   Camera (pills) ─┐
-   ABHA / ABDM ────┤
-   Chat ───────────┼──►  HEALTH MEMORY LAYER  ──►  Gemini reasoning  ──►  Personalized
-   Symptoms ───────┤   (Memory Extractor →                                actions &
-   Schedule/doses ─┘    Health Timeline →                                 reminders
-                        Context Builder)
+   Camera (pills) ──┐
+   Onboarding ──────┤
+   Chat ────────────┼──►  HEALTH MEMORY LAYER  ──►  Gemini reasoning  ──►  Personalized
+   Symptoms ────────┤   (Memory Extractor →                                actions &
+   Schedule/doses ──┘    Health Timeline →                                 reminders
+                         Context Builder)
 ```
 
 Every input flows into one memory layer; Gemini reasons over that memory, not over a single message. That orchestration — not any one model call — is what makes Aroha more than a chatbot.
@@ -32,8 +32,8 @@ Every input flows into one memory layer; Gemini reasons over that memory, not ov
 
 - **153M Indians are 60+** (2025), doubling to **347M by 2050** — India is ageing fast¹
 - **~40–50% of elderly** with chronic disease are non-adherent to their medications²
-- **900M+ ABHA (ABDM) health accounts** already exist — records people can import today³
-- **Scattered health records** — prescriptions, ABDM, and memory in different places
+- **900M+ ABHA digital health accounts** already exist³ — a population ready for digital health
+- **Scattered health records** — prescriptions and memory in different places
 - Nothing is prepared when they finally see a doctor; complex apps exclude elderly users
 
 ## The Solution
@@ -44,9 +44,9 @@ Aroha AI gives every elder a single source of truth for their health:
 
 | Feature | What It Does |
 |---|---|
+| **Onboarding Wizard** | Step-by-step setup: tell Aroha your conditions, medications, and routine |
 | **AI Chat + Memory** | Conversational companion that remembers your conditions, meds, and routine |
 | **Camera → Medication** | Photo of a pill strip — AI reads it, you confirm, it's scheduled with a reminder |
-| **ABDM / Record Import** | Upload a screenshot of your ABHA/health record — AI auto-fills your profile. *Import, not integration.* |
 | **Daily Schedule** | Simple day view of medications, routines, appointments; one-tap complete + local reminders |
 | **Doctor-Visit Summary** | One tap → symptoms + adherence + questions to ask your doctor |
 | **Symptom Photo Log** | Photo of a rash/swelling — logged with timestamp for the next doctor visit |
@@ -58,6 +58,8 @@ A health **advocate**: knows your full history, reviews a new prescription and h
 
 Plus **Google Sign-In with backup to your own Google Drive** (`appDataFolder`): sign in on a new phone and your history comes back — and the backup lives in *your* Drive, not our servers. Cross-device continuity with zero server-side storage of your health data.
 
+**Native ABDM integration** is on the roadmap for when ABDM/ABHA adoption reaches meaningful scale. The onboarding wizard already captures the same data today; ABDM Consent Manager integration will make it automatic.
+
 ---
 
 ## Tech Stack
@@ -66,7 +68,7 @@ Plus **Google Sign-In with backup to your own Google Drive** (`appDataFolder`): 
 |---|---|
 | **Mobile** | React Native (Expo SDK 52+), Android-first |
 | **Navigation** | Expo Router |
-| **AI** | Google Gemini API (1.5 Flash — Vision + Text), one pipeline for pills + ABDM records |
+| **AI** | Google Gemini API (1.5 Flash — Vision + Text), Vision pipeline for pill capture |
 | **Key proxy** | Cloudflare Worker holds the Gemini key server-side — never in the app |
 | **Data** | On-device (AsyncStorage now, expo-sqlite for structured data); no cloud DB in MVP |
 | **Auth** | None in MVP (single-device); accounts + cloud sync are roadmap |
@@ -142,7 +144,7 @@ ArohaAI/
 | **Chat** | Home screen — AI conversation with today's schedule |
 | **Schedule** | Day view with events, one-tap complete, reminders (daily recurrence in v1) |
 | **Add Medication** | Camera capture → Gemini Vision → editable auto-filled form → confirm |
-| **Import Records** | Screenshot upload → Gemini Vision → editable profile fields → confirm |
+| **Onboarding** | Step-by-step wizard to set up your health profile |
 | **Symptom Log** | Camera/gallery → AI describes → timestamped log |
 | **Health Profile** | Conditions, medications, doctors, memory (accessible from menu) |
 | **Doctor Summary** | One-tap pre-visit report: symptoms + adherence + questions |

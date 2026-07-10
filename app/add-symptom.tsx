@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
-  TextInput,
   Pressable,
   StyleSheet,
   ActivityIndicator,
@@ -14,42 +13,31 @@ import { router } from 'expo-router';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import { analyzeImage } from '@/lib/aroha';
-import { saveMedication, saveEvents, generateId } from '@/lib/schedule';
-import { scheduleMedicationReminders } from '@/lib/notifications';
+import { addEntry } from '@/memory/timeline';
 
 type Step = 'camera' | 'loading' | 'review' | 'done';
 
-type ExtractedData = {
-  name: string;
-  dosage: string;
-  form: string;
-  frequency: string;
-  times: string[];
-  instructions: string;
+type SymptomData = {
+  appearance: string;
+  description: string;
+  advice: string;
 };
 
-const FREQUENCIES = ['once_daily', 'twice_daily', 'thrice_daily', 'weekly', 'as_needed'];
-
-const DEFAULT_MED: ExtractedData = {
-  name: '',
-  dosage: '',
-  form: 'tablet',
-  frequency: 'once_daily',
-  times: ['08:00'],
-  instructions: '',
+const DEFAULT: SymptomData = {
+  appearance: '',
+  description: '',
+  advice: '',
 };
 
-export default function AddMedication() {
+export default function AddSymptom() {
   const [permission, requestPermission] = useCameraPermissions();
   const [step, setStep] = useState<Step>('camera');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
-  const [med, setMed] = useState<ExtractedData>(DEFAULT_MED);
+  const [symptom, setSymptom] = useState<SymptomData>(DEFAULT);
   const cameraRef = useRef<CameraView>(null);
 
   useEffect(() => {
-    if (!permission) {
-      requestPermission();
-    }
+    if (!permission) requestPermission();
   }, [permission]);
 
   const takePhoto = async () => {
@@ -73,63 +61,32 @@ export default function AddMedication() {
         encoding: FileSystem.EncodingType.Base64,
       });
       const mimeType = uri.endsWith('.png') ? 'image/png' : 'image/jpeg';
-      const result = await analyzeImage(base64, mimeType, 'analyzeMedication');
+      const result = await analyzeImage(base64, mimeType, 'analyzeSymptom');
 
-      setMed({
-        name: (result.name as string) || '',
-        dosage: (result.dosage as string) || '',
-        form: (result.form as string) || 'tablet',
-        frequency: (result.frequency as string) || 'once_daily',
-        times: Array.isArray(result.times) && result.times.length > 0
-          ? (result.times as string[])
-          : ['08:00'],
-        instructions: (result.instructions as string) || '',
+      setSymptom({
+        appearance: (result.appearance as string) || '',
+        description: (result.description as string) || '',
+        advice: (result.advice as string) || '',
       });
       setStep('review');
     } catch {
       Alert.alert(
-        'Could not read medication',
-        'Fill in the details manually.',
+        'Could not analyze image',
+        'Enter the details manually.',
         [{ text: 'OK' }]
       );
-      setMed(DEFAULT_MED);
+      setSymptom(DEFAULT);
       setStep('review');
     }
   };
 
-  const confirmMedication = async () => {
-    if (!med.name.trim()) {
-      Alert.alert('Missing name', 'Please enter the medication name.');
-      return;
-    }
-
-    const medId = generateId();
-    await saveMedication({
-      id: medId,
-      name: med.name.trim(),
-      dosage: med.dosage,
-      form: med.form,
-      frequency: med.frequency,
-      times: med.times,
-      instructions: med.instructions,
-      isActive: true,
-      createdAt: new Date().toISOString(),
+  const confirmSymptom = async () => {
+    const text = symptom.description || symptom.appearance || 'Symptom logged';
+    await addEntry({
+      date: new Date().toISOString(),
+      type: 'symptom',
+      event: text.slice(0, 200),
     });
-
-    const today = new Date().toISOString().slice(0, 10);
-    const events = med.times.map((time) => ({
-      id: generateId(),
-      date: today,
-      time,
-      title: `${med.name}${med.dosage ? ` (${med.dosage})` : ''}`,
-      type: 'medication' as const,
-      medId,
-      completed: false,
-    }));
-    await saveEvents(events);
-
-    scheduleMedicationReminders(med.name.trim(), med.times);
-
     setStep('done');
   };
 
@@ -144,7 +101,7 @@ export default function AddMedication() {
   if (!permission.granted) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.permissionText}>Camera access is needed to photograph medications.</Text>
+        <Text style={styles.permissionText}>Camera access is needed to log symptoms.</Text>
         <Pressable style={styles.permissionBtn} onPress={requestPermission}>
           <Text style={styles.permissionBtnText}>Grant Permission</Text>
         </Pressable>
@@ -160,7 +117,7 @@ export default function AddMedication() {
       <View style={styles.flex}>
         <CameraView ref={cameraRef} style={styles.camera} facing="back">
           <View style={styles.cameraOverlay}>
-            <Text style={styles.cameraHint}>Center the pill strip in the frame</Text>
+            <Text style={styles.cameraHint}>Take a photo of the symptom</Text>
             <Pressable style={styles.captureBtn} onPress={takePhoto}>
               <View style={styles.captureInner} />
             </Pressable>
@@ -177,7 +134,7 @@ export default function AddMedication() {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color="#0E7C7B" />
-        <Text style={styles.loadingText}>Reading medication…</Text>
+        <Text style={styles.loadingText}>Analyzing symptom…</Text>
       </View>
     );
   }
@@ -186,12 +143,9 @@ export default function AddMedication() {
     return (
       <View style={styles.centered}>
         <Text style={styles.doneIcon}>✓</Text>
-        <Text style={styles.doneTitle}>Medication Added!</Text>
-        <Text style={styles.doneSubtitle}>{med.name} has been added to your schedule.</Text>
-        <Pressable
-          style={styles.doneBtn}
-          onPress={() => router.back()}
-        >
+        <Text style={styles.doneTitle}>Symptom Logged!</Text>
+        <Text style={styles.doneSubtitle}>It has been saved to your health timeline.</Text>
+        <Pressable style={styles.doneBtn} onPress={() => router.back()}>
           <Text style={styles.doneBtnText}>Back to Chat</Text>
         </Pressable>
       </View>
@@ -200,66 +154,22 @@ export default function AddMedication() {
 
   return (
     <ScrollView style={styles.flex} contentContainerStyle={styles.formContainer}>
-      {photoUri && (
-        <Image source={{ uri: photoUri }} style={styles.preview} />
-      )}
+      {photoUri && <Image source={{ uri: photoUri }} style={styles.preview} />}
 
-      <Text style={styles.label}>Medication Name</Text>
-      <TextInput
-        style={styles.input}
-        value={med.name}
-        onChangeText={(v) => setMed({ ...med, name: v })}
-        placeholder="e.g. Metformin"
-      />
+      <Text style={styles.label}>What do you see?</Text>
+      <Text style={styles.value}>{symptom.appearance || 'Not detected'}</Text>
 
-      <Text style={styles.label}>Dosage</Text>
-      <TextInput
-        style={styles.input}
-        value={med.dosage}
-        onChangeText={(v) => setMed({ ...med, dosage: v })}
-        placeholder="e.g. 500mg"
-      />
+      <Text style={styles.label}>Description</Text>
+      <Text style={styles.value}>{symptom.description || 'Not detected'}</Text>
 
-      <Text style={styles.label}>Frequency</Text>
-      <View style={styles.freqRow}>
-        {FREQUENCIES.map((f) => (
-          <Pressable
-            key={f}
-            style={[styles.freqChip, med.frequency === f && styles.freqChipActive]}
-            onPress={() => setMed({ ...med, frequency: f })}
-          >
-            <Text style={[styles.freqText, med.frequency === f && styles.freqTextActive]}>
-              {f.replace(/_/g, ' ')}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
-
-      <Text style={styles.label}>Times (comma-separated, 24h)</Text>
-      <TextInput
-        style={styles.input}
-        value={med.times.join(', ')}
-        onChangeText={(v) =>
-          setMed({ ...med, times: v.split(',').map((t) => t.trim()).filter(Boolean) })
-        }
-        placeholder="e.g. 08:00, 20:00"
-      />
-
-      <Text style={styles.label}>Instructions</Text>
-      <TextInput
-        style={[styles.input, styles.multiline]}
-        value={med.instructions}
-        onChangeText={(v) => setMed({ ...med, instructions: v })}
-        placeholder="e.g. Take after meals"
-        multiline
-      />
+      <Text style={styles.advice}>{symptom.advice}</Text>
 
       <View style={styles.actionRow}>
         <Pressable style={styles.cancelBtn} onPress={() => router.back()}>
-          <Text style={styles.cancelText}>Cancel</Text>
+          <Text style={styles.cancelText}>Discard</Text>
         </Pressable>
-        <Pressable style={styles.confirmBtn} onPress={confirmMedication}>
-          <Text style={styles.confirmText}>Confirm & Add</Text>
+        <Pressable style={styles.confirmBtn} onPress={confirmSymptom}>
+          <Text style={styles.confirmText}>Log Symptom</Text>
         </Pressable>
       </View>
     </ScrollView>
@@ -325,28 +235,9 @@ const styles = StyleSheet.create({
   permissionBtnText: { color: '#fff', fontSize: 16, fontWeight: '600' },
   preview: { width: '100%', height: 200, borderRadius: 12, marginBottom: 16 },
   formContainer: { padding: 20, paddingBottom: 40 },
-  label: { fontSize: 15, fontWeight: '600', color: '#334', marginBottom: 6, marginTop: 14 },
-  input: {
-    fontSize: 18,
-    borderWidth: 1.5,
-    borderColor: '#cdd',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    color: '#111',
-  },
-  multiline: { minHeight: 80, textAlignVertical: 'top' },
-  freqRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  freqChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1.5,
-    borderColor: '#cdd',
-  },
-  freqChipActive: { backgroundColor: '#0E7C7B', borderColor: '#0E7C7B' },
-  freqText: { fontSize: 14, color: '#556' },
-  freqTextActive: { color: '#fff' },
+  label: { fontSize: 15, fontWeight: '600', color: '#334', marginBottom: 4, marginTop: 14 },
+  value: { fontSize: 18, color: '#111', marginBottom: 4 },
+  advice: { fontSize: 15, color: '#556', fontStyle: 'italic', marginTop: 16, lineHeight: 22 },
   actionRow: { flexDirection: 'row', gap: 12, marginTop: 24 },
   cancelBtn: {
     flex: 1,

@@ -52,7 +52,7 @@
 └─────────────────────────────────────────┘
 ```
 
-**Script**: "India has 153 million people over 60 today — doubling to 347 million by 2050. Nearly half of elderly patients with chronic disease don't take their medications correctly. And here's the twist: over 900 million ABHA digital health records already exist — but that data just sits there, scattered across prescriptions, ABDM, and memory. When these patients finally see a doctor, they can't remember what happened. The apps meant to help are too complex for the people who need them most."
+**Script**: "India has 153 million people over 60 today — doubling to 347 million by 2050. Nearly half of elderly patients with chronic disease don't take their medications correctly. Their health information is scattered across prescriptions and memory. When these patients finally see a doctor, they can't remember what happened. The apps meant to help are too complex for the people who need them most."
 
 > Sources: [UNFPA](https://india.unfpa.org/en/news/india-ageing-elderly-make-20-population-2050-unfpa-report) (population) · [WHO SAGE2](https://pmc.ncbi.nlm.nih.gov/articles/PMC10603298/) (adherence) · [PIB](https://www.pib.gov.in/PressReleasePage.aspx?PRID=2266979&reg=3&lang=1) (ABHA).
 
@@ -64,11 +64,11 @@
 ┌─────────────────────────────────────────┐
 │  THE SOLUTION: ONE MEMORY LAYER          │
 │                                         │
-│   📸 pills ─┐                            │
-│   🗂️ ABHA ──┤                            │
-│   💬 chat ──┼─►  HEALTH MEMORY  ─► Gemini │
-│   🩹 symptoms┤     LAYER          reasoning│
-│   📅 doses ─┘   (extract→timeline  → actions│
+│   📸 pills ───┐                          │
+│   👤 onboarding ─┤                       │
+│   💬 chat ──────┼─►  HEALTH MEMORY ─► Gemini │
+│   🩹 symptoms ──┤     LAYER         reasoning│
+│   📅 doses ────┘   (extract→timeline→actions│
 │                  →context)              │
 │                                         │
 │  inputs → memory → context →            │
@@ -77,7 +77,7 @@
 └─────────────────────────────────────────┘
 ```
 
-**Script**: "Aroha isn't a chatbot with features bolted on — it's one memory layer. A photographed pill, an ABHA record, a logged symptom, a completed dose — everything flows into a structured health memory. Gemini reasons over that memory, not over a single message. So every interaction becomes memory, memory becomes context, context becomes personalization, and personalization improves care. That orchestration is the innovation — not any one model call."
+**Script**: "Aroha isn't a chatbot with features bolted on — it's one memory layer. A photographed pill, an onboarding session, a logged symptom, a completed dose — everything flows into a structured health memory. Gemini reasons over that memory, not over a single message. So every interaction becomes memory, memory becomes context, context becomes personalization, and personalization improves care. That orchestration is the innovation — not any one model call."
 
 ---
 
@@ -91,9 +91,9 @@
 │  Photo a pill strip → AI reads it →     │
 │  scheduled with a reminder              │
 │                                         │
-│  🗂️ ABDM/RECORD IMPORT                  │
-│  Screenshot your ABHA record → profile  │
-│  auto-fills. Import, not integration.   │
+│  👤 ONBOARDING WIZARD                    │
+│  Tell Aroha your conditions, meds,      │
+│  and routine — sets up your profile     │
 │                                         │
 │  🧠 CHAT + PERSISTENT MEMORY            │
 │  Remembers your conditions, meds,       │
@@ -110,7 +110,7 @@
 └─────────────────────────────────────────┘
 ```
 
-**Script**: "Five things Aroha does today. One: photograph a pill strip and it's read, scheduled, and reminded. Two — and this is unique — screenshot your ABDM health record and your entire profile fills in; import, not a months-long integration. Three: chat with persistent memory, so Aroha actually knows you. Four: a simple daily schedule with reminders. Five: one tap generates a summary to take to your doctor. Two of these run on the same Gemini Vision pipeline — that's the technical depth."
+**Script**: "Five things Aroha does today. One: photograph a pill strip and it's read, scheduled, and reminded. Two: a simple onboarding wizard where you tell Aroha your conditions, medications, and routine — and it remembers everything. Three: chat with persistent memory, so Aroha actually knows you. Four: a simple daily schedule with reminders. Five: one tap generates a summary to take to your doctor."
 
 ---
 
@@ -129,10 +129,10 @@
 │                                         │
 │  ┌──────────┐  ┌────────────────────┐  │
 │  │ DATA      │  │  KEY DEPTH         │  │
-│  │ On-device │  │  ONE Vision        │  │
-│  │ storage   │  │  pipeline →        │  │
-│  │ (no cloud │  │  pills + ABDM      │  │
-│  │  DB)      │  │  records           │  │
+│  │ On-device │  │  Health Memory     │  │
+│  │ storage   │  │  Layer + Vision    │  │
+│  │ (no cloud │  │  pipeline →        │  │
+│  │  DB)      │  │  pills → schedule  │  │
 │  └──────────┘  └────────────────────┘  │
 │                                         │
 │  Android-first (iOS to follow)          │
@@ -142,7 +142,7 @@
 └─────────────────────────────────────────┘
 ```
 
-**Script**: "Built on React Native with Expo, Android-first with a local build we can install and demo. Google Gemini 1.5 Flash powers the AI — one Vision pipeline reads both pill strips and ABDM record screenshots. All health data stays on the device — private by default, no cloud database. The Gemini key lives server-side in a Cloudflare Worker, never in the app. Serverless means zero ops for a solo builder shipping in 17 days."
+**Script**: "Built on React Native with Expo, Android-first with a local build we can install and demo. Google Gemini 1.5 Flash powers the AI — the Vision pipeline reads pill strips and schedules them. All health data stays on the device — private by default, no cloud database. The Gemini key lives server-side in a Cloudflare Worker, never in the app. Serverless means zero ops for a solo builder shipping in 17 days."
 
 ---
 
@@ -217,8 +217,8 @@
 │  ROADMAP                                 │
 │                                         │
 │  JUL 2026 (v1 — shipped)                │
+│  ├── Onboarding wizard                  │
 │  ├── Camera → medication + reminders    │
-│  ├── ABDM/record screenshot import      │
 │  ├── Chat + persistent memory           │
 │  └── Doctor-visit summary               │
 │                                         │
@@ -241,7 +241,7 @@
 └─────────────────────────────────────────┘
 ```
 
-**Script**: "v1 shipped this month: camera-to-medication, ABDM import, chat with memory, doctor summaries. V2 adds voice, Hindi, and the first prescription-review advocate in beta. V3 brings symptom-photo guidance, native ABDM linking, the caregiver dashboard, and B2B. 2027 is APAC scale and formal compliance."
+**Script**: "v1 shipped this month: onboarding, camera-to-medication, chat with memory, doctor summaries. V2 adds voice, Hindi, and the first prescription-review advocate in beta. V3 brings symptom-photo guidance, native ABDM integration for when adoption scales, the caregiver dashboard, and B2B. 2027 is APAC scale and formal compliance."
 
 ---
 
@@ -259,8 +259,8 @@
 │  System for Indian families             │
 │                                         │
 │  🏆 MULTIMODAL DEPTH                     │
-│  One Vision pipeline → pills AND ABDM   │
-│  records, all feeding one memory layer  │
+│  Vision pipeline for pills + Health     │
+│  Memory Layer orchestrating it all      │
 │                                         │
 │  🏆 EMOTIONAL HOOK                      │
 │  Everyone has aging parents             │
@@ -275,7 +275,7 @@
 └─────────────────────────────────────────┘
 ```
 
-**Script**: "Five reasons we win. Real problem — medication errors and scattered records. Multimodal depth — one Vision pipeline reading both pills and ABDM records, plus chat, memory, and schedule. Emotional connection — everyone has aging parents. Responsible by design — Aroha advocates for the patient but never overrides the doctor, and judges notice who takes that seriously. And scalable from one user to enterprise. We hit every criterion — and we do it without pretending an AI should replace a physician."
+**Script**: "Five reasons we win. Real problem — medication errors and scattered records. Multimodal depth — Vision pipeline for pill capture plus the Health Memory Layer orchestrating everything. Emotional connection — everyone has aging parents. Responsible by design — Aroha advocates for the patient but never overrides the doctor, and judges notice who takes that seriously. And scalable from one user to enterprise. We hit every criterion — and we do it without pretending an AI should replace a physician."
 
 ---
 

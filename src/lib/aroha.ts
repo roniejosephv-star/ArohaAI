@@ -40,7 +40,7 @@ export async function sendToAroha(
 export async function analyzeImage(
   imageBase64: string,
   mimeType: string,
-  intent: 'analyzeMedication' | 'analyzeRecord'
+  intent: 'analyzeMedication' | 'analyzeSymptom'
 ): Promise<Record<string, unknown>> {
   if (!API_URL) {
     throw new Error('EXPO_PUBLIC_AROHA_API_URL is not set.');

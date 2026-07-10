@@ -228,7 +228,7 @@ sequenceDiagram
 Aroha's distinguishing component. Every input runs through the same three on-device stages, so Gemini reasons over accumulated memory rather than a single message:
 
 ```
- Inputs (chat, camera→meds, ABHA import, symptoms, dose completions)
+ Inputs (chat, camera→meds, onboarding, symptoms, dose completions)
         │
         ▼
  ┌─────────────────┐   extract structured facts/events from each interaction
@@ -265,20 +265,6 @@ sequenceDiagram
     App->>User: Display Aroha's response
 ```
 
-### Flow 1b: ABDM / Record Screenshot → Profile (reuses the Vision pipeline)
-
-```mermaid
-sequenceDiagram
-    User->>App: Import records → pick ABDM/ABHA screenshot
-    App->>Worker: POST image (analyze record)
-    Worker->>Gemini Vision: Extract conditions + medications + history
-    Gemini Vision->>Worker: { conditions[], medications[], notes }
-    Worker->>App: Structured profile data
-    App->>User: Editable review card (confirm before save)
-    User->>App: Confirm
-    App->>On-device store: Write to profile + medications
-```
-
 ### Flow 3: Health Q&A (stretch — info only, NOT interaction checking)
 
 ```mermaid
@@ -300,7 +286,6 @@ One Worker (`aroha-proxy`) holds the Gemini key and exposes a single POST endpoi
 |---|---|---|---|
 | chat | `{ message, history }` | `{ reply }` | Persona + safety-wrapped Gemini text (built in scaffold) |
 | analyzeMedication | `{ image }` | `{ name, dosage, frequency, times, instructions }` | Gemini Vision → med data (HERO) |
-| analyzeRecord | `{ image }` | `{ conditions[], medications[], notes }` | Gemini Vision → ABDM/record import (same pipeline) |
 | generateDoctorSummary | `{ profile, adherence, symptoms }` | `{ summary }` | Pre-visit summary (symptoms + adherence + questions) |
 | analyzeSymptom *(P1)* | `{ image }` | `{ description }` | Gemini Vision → symptom **log** (describe, not diagnose) |
 
@@ -321,6 +306,8 @@ The Worker always injects Aroha's persona + hard safety rules ("advocate, never 
 
 The planned sync approach is **Google Sign-In + the user's own Google Drive** (`appDataFolder`): the app backs up a JSON snapshot to the user's Drive and restores it on a new device. This keeps the "we store nothing" posture — health data lives on the device and in the user's own Drive, never in a database we run.
 
+**Native ABDM integration** is on the roadmap for when ABDM/ABHA adoption reaches meaningful scale. v1's onboarding wizard already captures conditions, medications, and routine for every user today. When ABDM is ready, the same data model ingests via Consent Manager API — the onboarding wizard becomes the fallback, and ABDM-linked records become the automatic path.
+
 ## 6. Key Libraries & Dependencies
 
 **v1 (core):**
@@ -330,7 +317,7 @@ The planned sync approach is **Google Sign-In + the user's own Google Drive** (`
 | `expo` ~52 | React Native framework (Android-first) |
 | `expo-router` | File-based navigation |
 | `expo-camera` | Camera capture for medications/symptoms |
-| `expo-image-picker` | Gallery import (pill photos + ABDM screenshots) |
+| `expo-image-picker` | Gallery import (pill photos + symptom photos) |
 | `expo-notifications` | Local reminders |
 | `@react-native-async-storage/async-storage` | On-device key-value storage |
 | `expo-sqlite` | On-device structured data (schedule, meds, messages) |

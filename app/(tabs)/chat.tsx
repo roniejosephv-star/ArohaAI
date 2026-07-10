@@ -13,15 +13,23 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { sendToAroha } from '@/lib/aroha';
-import { saveMessages, loadMessages, ChatMessage } from '@/lib/storage';
+import { saveMessages, loadMessages, ChatMessage, loadProfile } from '@/lib/storage';
 import { addEntry } from '@/memory/timeline';
 import { buildTimelineEvents } from '@/memory/extractor';
 import { buildContext } from '@/memory/contextBuilder';
 
-const WELCOME: ChatMessage = {
-  role: 'assistant',
-  content: 'Hello! I am Aroha. How are you feeling today?',
-};
+function getWelcome(name?: string): ChatMessage {
+  if (name) {
+    return {
+      role: 'assistant',
+      content: `Hello, ${name}! I am Aroha. I remember your conditions and medications. How are you feeling today?`,
+    };
+  }
+  return {
+    role: 'assistant',
+    content: 'Hello! I am Aroha. How are you feeling today?',
+  };
+}
 
 export default function Chat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -33,7 +41,12 @@ export default function Chat() {
   useEffect(() => {
     (async () => {
       const saved = await loadMessages();
-      setMessages(saved.length > 0 ? saved : [WELCOME]);
+      if (saved.length > 0) {
+        setMessages(saved);
+      } else {
+        const profile = await loadProfile();
+        setMessages([getWelcome(profile?.name)]);
+      }
       setReady(true);
     })();
   }, []);
@@ -133,6 +146,12 @@ export default function Chat() {
             onPress={() => router.push('/add-medication')}
           >
             <Text style={styles.camText}>📷</Text>
+          </Pressable>
+          <Pressable
+            style={styles.camBtn}
+            onPress={() => router.push('/add-symptom')}
+          >
+            <Text style={styles.camText}>🩹</Text>
           </Pressable>
           <TextInput
             style={styles.input}

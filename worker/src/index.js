@@ -25,12 +25,12 @@ const MEDICATION_PROMPT = `You are a medication extraction assistant. Analyze th
 
 Return ONLY valid JSON, no markdown, no explanation. If you cannot determine a field, use null.`;
 
-const RECORD_PROMPT = `You are a health record extraction assistant. Analyze the image and return JSON with:
-- conditions: array of medical conditions mentioned
-- medications: array of medications mentioned (each with name and dosage if visible)
-- notes: any other relevant health information visible in the record
+const SYMPTOM_PROMPT = `You are a symptom description assistant. Describe what you see in the image factually and neutrally.
+- appearance: brief visual description (color, size, texture, location on body)
+- description: plain English description of what the image shows
+- advice: general advice only — always end with "This is not medical advice. Please consult your doctor for a proper diagnosis."
 
-Return ONLY valid JSON, no markdown, no explanation. If you cannot determine a field, use an empty array or null.`;
+Return ONLY valid JSON with these three fields, no markdown, no explanation. If you cannot determine a field, use null.`;
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -144,8 +144,8 @@ export default {
           return await handleChat(body, env);
         case 'analyzeMedication':
           return await handleVision(body, env, MEDICATION_PROMPT);
-        case 'analyzeRecord':
-          return await handleVision(body, env, RECORD_PROMPT);
+        case 'analyzeSymptom':
+          return await handleVision(body, env, SYMPTOM_PROMPT);
         default:
           return json({ error: `Unknown intent: ${intent}` }, 400);
       }

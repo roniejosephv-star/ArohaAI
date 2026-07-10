@@ -1,6 +1,6 @@
 # Aroha AI — Demo Script (~2 min 10 sec — LOCKED)
 
-> **Arc (locked):** Problem → Meet Aroha + Memory → HERO camera→med → ABDM import + personal summary → Doctor summary payoff → Vision/close.
+> **Arc (locked):** Problem → Onboarding + Memory → HERO camera→med → Schedule + Reminders → Doctor summary payoff → Vision/close.
 > **Cut from the video** (still built, just not shown): symptom photo log, Health Q&A, standalone schedule/calendar beat. Reason: symptom log is visually redundant with camera→med; Q&A is the riskiest thing to demo live; the calendar is a commodity, shown only as a 2-second flash.
 
 ## Setup
@@ -9,10 +9,10 @@
 - **Test user**: "Geeta Sharma, 68, BP + Type 2 Diabetes + Arthritis"
 - **Pre-loaded medications**: Metformin 500mg, Amlodipine 5mg, Glucosamine
 - **Pre-loaded schedule**: BP 8AM, Breakfast 9AM, Metformin 12PM, Walk 6PM, Amlodipine 8PM
-- **Props**: Printed pill strip (Metformin or similar) AND a sample ABDM/ABHA record screenshot
+- **Props**: Printed pill strip (Metformin or similar)
 - **Lighting**: Good lighting for camera demo
 - **Screen recording**: Clean recording, Do Not Disturb on, no notifications
-- **Hierarchy rule**: ONE hero (camera→med). ABDM import is the second beat. Everything else is supporting — don't let it flatten into "four wows." Keep the pace tight.
+- **Hierarchy rule**: ONE hero (camera→med). The onboarding is the second beat. Everything else is supporting — don't let it flatten into "four wows." Keep the pace tight.
 
 ---
 
@@ -20,9 +20,9 @@
 
 ### 0:00 — The Problem (15 sec)
 
-**Visual**: Split screen — elder person confused at a fistful of pill bottles vs scattered prescriptions + an ABDM record on a phone.
+**Visual**: Split screen — elder person confused at a fistful of pill bottles vs a clutter of scattered prescriptions.
 
-**Audio**: > "My mother takes five medications every day. Her health records are scattered — prescriptions, ABDM, memory. She forgets doses, and she never remembers what to tell her doctor. She needed a single source of truth."
+**Audio**: > "My mother takes five medications every day. Her health records are scattered between prescriptions and memory. She forgets doses, and she never remembers what to tell her doctor. She needed a single source of truth."
 
 ---
 
@@ -36,7 +36,7 @@
 
 **Audio**: > "This is Aroha. In under two minutes she learns Geeta's conditions, medications, and routine — and from then on, she remembers. Every morning Geeta opens the app, sees her day, and taps to complete each item. Aroha checks in and keeps her on track."
 
-> **Note:** the calendar is a 2-second texture shot, NOT a beat. Depth is shown by memory, ABDM, and the summary — never by a calendar grid. Do not linger.
+> **Note:** the calendar is a 2-second texture shot, NOT a beat. Depth is shown by memory, camera→med, and the summary — never by a calendar grid. Do not linger.
 
 ---
 
@@ -54,18 +54,18 @@
 
 ---
 
-### 1:05 — WOW Moment #2: ABDM Import → Personal Summary (25 sec)
+### 1:05 — Beat 3: Schedule + Reminders (15 sec)
 
 **Visual**:
-- Tap "Import records" → pick a screenshot of an ABDM/ABHA record from the gallery.
-- Loading → Aroha extracts conditions + medications → editable review card → tap "Confirm."
-- **PAYOFF SHOT (~4s):** cut straight to the filled **Personal Health Summary** (from the menu) — conditions, medications, history all populated. Hold just long enough to read "this is her whole health, captured."
+- Quick swipe to schedule tab: today's day view with completed/pending items.
+- Tap to complete a medication → count updates.
+- Local notification pops: "Take Metformin — 12:00 PM."
 
-**Audio**: > "Here's what no chatbot in this room has. Geeta already has an ABDM health record — she just uploads a screenshot. The same Vision pipeline reads her conditions and medications and — look — fills her entire personal health profile. No typing, no complex ABDM integration; it works today. That's import, not integration. Native ABDM linking is on our roadmap."
+**Audio**: > "The schedule works with or without the internet — everything on-device. One tap marks it done, notifications keep her on track, and Aroha checks in."
 
 ---
 
-### 1:30 — The Payoff: Doctor-Visit Summary (20 sec)
+### 1:20 — The Payoff: Doctor-Visit Summary (20 sec)
 
 **Visual**:
 - Open menu → "Prepare for doctor visit."
@@ -75,7 +75,9 @@
 
 ---
 
-### 1:50 — The Vision & Close (20 sec)
+### 1:40 — The Vision & Close (20 sec)
+
+**Total runtime: ~2:00**
 
 **Visual**:
 - Text-over-app: "Today: remembers & reminds → Tomorrow: your health advocate."

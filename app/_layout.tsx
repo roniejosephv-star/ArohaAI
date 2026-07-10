@@ -7,10 +7,15 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="onboarding" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen
           name="add-medication"
           options={{ presentation: 'modal', headerShown: true, title: 'Add Medication' }}
+        />
+        <Stack.Screen
+          name="add-symptom"
+          options={{ presentation: 'modal', headerShown: true, title: 'Log Symptom' }}
         />
       </Stack>
     </SafeAreaProvider>

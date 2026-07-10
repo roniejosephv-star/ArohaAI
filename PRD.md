@@ -12,7 +12,7 @@
 | **Platform** | Android-first (React Native / Expo), iOS to follow |
 | **Timeline** | July 2 – July 19, 2026 (17 days) |
 | **Builder** | Solo |
-| **Core Concept** | A **Health Memory Layer**: every input (camera→meds, ABHA import, chat, symptoms, doses) is turned into structured health memory; Gemini reasons over that memory — not a single message — to deliver reminders, doctor summaries, and personalized help. Inputs → memory → context → personalization → better care. |
+| **Core Concept** | A **Health Memory Layer**: every input (camera→meds, onboarding, chat, symptoms, doses) is turned into structured health memory; Gemini reasons over that memory — not a single message — to deliver reminders, doctor summaries, and personalized help. Inputs → memory → context → personalization → better care. |
 | **Positioning** | A health-memory companion for elders and their families that remembers, organizes, and prepares for care. **Advocates for the patient, never overrides the doctor.** No diagnosis, no prescribing, no "your medicine is wrong." |
 
 ## 2. Problem Statement
@@ -23,13 +23,13 @@
 |---|---|
 | Ageing population | 153M Indians are 60+ (2025), doubling to 347M by 2050¹ |
 | Medication mismanagement | ~40–50% of elderly with chronic disease are non-adherent² |
-| Scattered records | 900M+ ABHA accounts exist³ but data sits unused across prescriptions, ABDM, and memory |
+| Scattered records | 900M+ ABHA accounts exist³ but data sits unused across prescriptions and memory |
 | Complex apps | Elderly users excluded by small text, confusing navigation |
 | Unprepared visits | Nothing organized to hand the doctor at appointment time |
 
 ### The Solution
 
-**Aroha AI**: An interactive AI chat with an integrated daily schedule. The user talks to Aroha, Aroha reads medications (pill photo) and health records (ABDM screenshot) into a single profile, manages the schedule with reminders, logs symptom photos, prepares doctor-visit summaries, and turns every interaction into structured memory — building a lifelong health memory that makes each interaction smarter. It **advocates for the patient; it never overrides the doctor.**
+**Aroha AI**: An interactive AI chat with an integrated daily schedule. The user tells Aroha about themselves through a simple onboarding wizard, reads medications (pill photo) into a single profile, manages the schedule with reminders, logs symptom photos, prepares doctor-visit summaries, and turns every interaction into structured memory — building a lifelong health memory that makes each interaction smarter. It **advocates for the patient; it never overrides the doctor.**
 
 > ¹ [UNFPA India Ageing Report](https://india.unfpa.org/en/news/india-ageing-elderly-make-20-population-2050-unfpa-report) · ² [WHO SAGE2 study](https://pmc.ncbi.nlm.nih.gov/articles/PMC10603298/) · ³ [PIB — 90 crore ABHA](https://www.pib.gov.in/PressReleasePage.aspx?PRID=2266979&reg=3&lang=1)
 
@@ -134,7 +134,7 @@ US-24: As a caregiver, I want to receive alerts for missed critical meds.
 | F-01 | AI Chat | Conversational UI with chat history, Aroha personality |
 | F-02 | **Health Memory Layer** | The core. Three parts: **Memory Extractor** (pull structured facts/events from each interaction) → **Health Timeline** (append-only on-device log of dated health events) → **Context Builder** (assemble profile + relevant timeline into every Gemini prompt). This is what makes Aroha a memory system, not a chatbot. |
 | F-06 | Camera → Medication (HERO) | Capture photo → Gemini Vision reads → editable auto-filled form → confirm → scheduled |
-| F-07 | ABDM / Record Import | Upload ABHA/record screenshot → same Vision pipeline auto-fills profile. Import, not integration. |
+| F-10 | Onboarding | Step-by-step wizard: name, age, conditions, medications, routine — populates health profile |
 | F-03 | Daily Schedule | Day view of events; add/edit/delete; one-tap complete |
 | F-05 | Local Notifications | Reminders for scheduled events (expo-notifications) |
 | F-11 | Auth | Email/password (Google sign-in = stretch) |
@@ -143,7 +143,6 @@ US-24: As a caregiver, I want to receive alerts for missed critical meds.
 
 | ID | Feature | Description |
 |---|---|---|
-| F-10 | Onboarding | Step-by-step setup: profile, conditions, medications, routine |
 | F-08 | Symptom Photo Log | Take/upload photo → AI describes → logs with timestamp |
 | F-15 | Doctor Visit Summary | Auto-generated report (symptoms, adherence, questions to ask) |
 | F-14 | Streak Tracking | Daily adherence streak with celebration messages |
@@ -159,7 +158,7 @@ US-24: As a caregiver, I want to receive alerts for missed critical meds.
 
 ### CUT from v1 → moved to Vision/Roadmap (see §5b)
 
-Drug-interaction engine · Caregiver dashboard · Prescription-review advocate · Rash/symptom → action guide · these are the **north-star vision**, not hackathon-build claims.
+Drug-interaction engine · Caregiver dashboard · Prescription-review advocate · Rash/symptom → action guide · Native ABDM (Consent Manager) integration — planned for when ABDM adoption reaches meaningful scale · these are the **north-star vision**, not hackathon-build claims.
 
 ## 5b. Vision — Aroha as Health Advocate (roadmap, NOT built for v1)
 
@@ -177,6 +176,8 @@ The north star: Aroha evolves from a companion that *remembers and reminds* into
 ### Cloud continuity (roadmap)
 
 **Google Sign-In + backup/restore to the user's own Google Drive (`appDataFolder`).** A JSON snapshot of the user's data is written to their *own* Drive; signing in on a new device restores it. Aroha runs no backend database and stores none of the user's health data — the backup lives in the user's Drive. This extends the "we store nothing" privacy posture to cross-device use. Not built in v1 (adds Android OAuth complexity); featured as roadmap.
+
+**Native ABDM integration (roadmap):** When ABDM/ABHA adoption reaches scale among our users, we'll add Consent Manager API integration so health records import directly. The onboarding wizard — already in v1 — captures the same data (conditions, medications, routine) for the 100% of users today. ABDM integration then becomes a seamless upgrade path, not a missing feature.
 
 ## 6. User Flow
 
@@ -236,7 +237,7 @@ Schedule View (v1):
 
 | Criteria | How Aroha AI Addresses It |
 |---|---|
-| **Innovation & Creativity** | One Gemini Vision pipeline powering BOTH pill capture and ABDM record import — no chatbot competitor has this |
+| **Innovation & Creativity** | Gemini Vision pipeline powering pill capture combined with a Health Memory Layer — no chatbot competitor has this |
 | **Real-World Problem Solving** | Medication errors + scattered records + unprepared doctor visits — concrete, measurable |
 | **AI Automation** | Gemini Vision + persistent memory + context-aware prompting + auto-generated doctor summaries |
 | **User Experience** | Chat-first, large text, one-tap interactions, big touch targets for seniors |
