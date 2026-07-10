@@ -94,6 +94,44 @@ async function handleChat(body, env) {
   return json({ reply: reply || "Sorry, I couldn't find the words. Please try again." });
 }
 
+async function handleDoctorSummary(body, env) {
+  const { profile, adherence, symptoms, recentActivity } = body;
+
+  const dataParts = [];
+  if (profile) {
+    dataParts.push('PATIENT PROFILE:');
+    if (profile.name) dataParts.push(`- Name: ${profile.name}`);
+    if (profile.age) dataParts.push(`- Age: ${profile.age}`);
+    if (profile.conditions?.length) dataParts.push(`- Conditions: ${profile.conditions.join(', ')}`);
+    if (profile.medications?.length) dataParts.push(`- Medications: ${profile.medications.join(', ')}`);
+    if (profile.routine) dataParts.push(`- Routine: ${profile.routine}`);
+  }
+  if (adherence) dataParts.push(`\nADHERENCE (last 7 days):\n${adherence}`);
+  if (symptoms?.length) dataParts.push(`\nRECENT SYMPTOMS:\n${symptoms.join('\n')}`);
+  if (recentActivity?.length) dataParts.push(`\nRECENT ACTIVITY:\n${recentActivity.join('\n')}`);
+
+  const userMessage = `Generate a concise doctor-visit summary from this patient data. Include:
+1. Patient overview (name, age, conditions)
+2. Current medications
+3. Recent symptoms (if any)
+4. Medication adherence summary
+5. 3 suggested questions the patient should ask their doctor
+
+Keep it clear, use plain language. End with: "This summary was prepared by Aroha AI. Please verify all information with your doctor."`;
+
+  const systemPrompt = AROHA_SYSTEM + `\n\nPATIENT DATA FOR THIS VISIT:\n${dataParts.join('\n')}`;
+
+  const reply = await callGemini(
+    {
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents: [{ role: 'user', parts: [{ text: userMessage }] }],
+    },
+    env
+  );
+
+  return json({ summary: reply || "Could not generate summary. Please try again." });
+}
+
 async function handleVision(body, env, prompt) {
   const { image, mimeType } = body;
 
@@ -146,6 +184,8 @@ export default {
           return await handleVision(body, env, MEDICATION_PROMPT);
         case 'analyzeSymptom':
           return await handleVision(body, env, SYMPTOM_PROMPT);
+        case 'generateDoctorSummary':
+          return await handleDoctorSummary(body, env);
         default:
           return json({ error: `Unknown intent: ${intent}` }, 400);
       }

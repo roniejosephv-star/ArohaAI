@@ -17,6 +17,10 @@ export default function RootLayout() {
           name="add-symptom"
           options={{ presentation: 'modal', headerShown: true, title: 'Log Symptom' }}
         />
+        <Stack.Screen
+          name="doctor-summary"
+          options={{ presentation: 'modal', headerShown: true, title: 'Doctor Visit' }}
+        />
       </Stack>
     </SafeAreaProvider>
   );

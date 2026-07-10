@@ -153,6 +153,12 @@ export default function Chat() {
           >
             <Text style={styles.camText}>🩹</Text>
           </Pressable>
+          <Pressable
+            style={styles.camBtn}
+            onPress={() => router.push('/doctor-summary')}
+          >
+            <Text style={styles.camText}>🩺</Text>
+          </Pressable>
           <TextInput
             style={styles.input}
             placeholder="Type a message…"
