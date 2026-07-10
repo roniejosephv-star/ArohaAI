@@ -47,7 +47,7 @@ function json(obj, status = 200) {
 
 async function callGemini(payload, env) {
   const url =
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' +
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' +
     env.GEMINI_API_KEY;
 
   const r = await fetch(url, {
@@ -58,8 +58,9 @@ async function callGemini(payload, env) {
 
   const data = await r.json();
   if (!r.ok) {
-    console.error('Gemini error:', JSON.stringify(data));
-    throw new Error('Gemini request failed');
+    const msg = data?.error?.message || JSON.stringify(data);
+    console.error('Gemini error:', msg);
+    throw new Error('Gemini: ' + msg);
   }
 
   return data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';

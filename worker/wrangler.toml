@@ -1,6 +1,7 @@
 name = "aroha-proxy"
 main = "src/index.js"
 compatibility_date = "2024-11-01"
+workers_dev = true
 
 # GEMINI_API_KEY is stored as a secret, NOT here:
 #   npx wrangler secret put GEMINI_API_KEY
