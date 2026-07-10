@@ -17,6 +17,7 @@ import { saveMessages, loadMessages, ChatMessage, loadProfile } from '@/lib/stor
 import { addEntry } from '@/memory/timeline';
 import { buildTimelineEvents } from '@/memory/extractor';
 import { buildContext } from '@/memory/contextBuilder';
+import { useNetworkStatus } from '@/lib/useNetworkStatus';
 
 function getWelcome(name?: string): ChatMessage {
   if (name) {
@@ -32,6 +33,7 @@ function getWelcome(name?: string): ChatMessage {
 }
 
 export default function Chat() {
+  const isOnline = useNetworkStatus();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [ready, setReady] = useState(false);
   const [input, setInput] = useState('');
@@ -108,6 +110,11 @@ export default function Chat() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
+      {!isOnline && (
+        <View style={styles.offlineBanner}>
+          <Text style={styles.offlineText}>No internet — AI features unavailable</Text>
+        </View>
+      )}
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -207,16 +214,29 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     color: '#111',
   },
+  offlineBanner: {
+    backgroundColor: '#FEF3C7',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  offlineText: { fontSize: 15, color: '#92400E', fontWeight: '600' },
   sendBtn: {
     backgroundColor: '#0E7C7B',
     borderRadius: 14,
-    paddingHorizontal: 22,
-    paddingVertical: 14,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    minHeight: 48,
+    justifyContent: 'center',
   },
-  sendText: { color: '#fff', fontSize: 18, fontWeight: '700' },
+  sendText: { color: '#fff', fontSize: 19, fontWeight: '700' },
   camBtn: {
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    minWidth: 48,
+    minHeight: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  camText: { fontSize: 24 },
+  camText: { fontSize: 26 },
 });

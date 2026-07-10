@@ -11,10 +11,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import { loadEvents, saveEvents, ScheduleEvent } from '@/lib/schedule';
 import { addEntry } from '@/memory/timeline';
+import { getStreak, updateStreak, streakMessage } from '@/lib/streak';
 
 export default function Schedule() {
   const [events, setEvents] = useState<ScheduleEvent[]>([]);
   const [ready, setReady] = useState(false);
+  const [streak, setStreak] = useState(0);
 
   useFocusEffect(
     useCallback(() => {
@@ -22,6 +24,8 @@ export default function Schedule() {
         const all = await loadEvents();
         const today = new Date().toISOString().slice(0, 10);
         setEvents(all.filter((e) => e.date === today));
+        const s = await getStreak();
+        setStreak(s.current);
         setReady(true);
       })();
     }, [])
@@ -50,6 +54,9 @@ export default function Schedule() {
       return upd || e;
     });
     await saveEvents(merged);
+
+    const s = await updateStreak();
+    setStreak(s.current);
   };
 
   if (!ready) {
@@ -77,6 +84,12 @@ export default function Schedule() {
         <Text style={styles.progress}>
           {events.filter((e) => e.completed).length} of {events.length} completed
         </Text>
+
+        {streak > 0 && (
+          <View style={styles.streakBanner}>
+            <Text style={styles.streakText}>{streakMessage(streak)}</Text>
+          </View>
+        )}
 
         {events.length === 0 ? (
           <View style={styles.empty}>
@@ -130,35 +143,44 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#fff' },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   container: { flex: 1, padding: 16 },
-  date: { fontSize: 20, fontWeight: '700', color: '#123', marginBottom: 4 },
-  progress: { fontSize: 15, color: '#556', marginBottom: 16 },
-  list: { gap: 10 },
+  date: { fontSize: 22, fontWeight: '700', color: '#123', marginBottom: 4 },
+  progress: { fontSize: 17, color: '#556', marginBottom: 16 },
+  streakBanner: {
+    backgroundColor: '#E8F5E9',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 16,
+    alignItems: 'center',
+  },
+  streakText: { fontSize: 17, color: '#2E7D32', fontWeight: '700' },
+  list: { gap: 12 },
   event: {
     flexDirection: 'row',
     borderRadius: 14,
     backgroundColor: '#F5F9F9',
-    padding: 14,
-    gap: 12,
+    padding: 16,
+    gap: 14,
+    minHeight: 64,
   },
   eventDone: { opacity: 0.6 },
   eventLeft: { alignItems: 'center', gap: 6 },
-  eventTime: { fontSize: 15, fontWeight: '600', color: '#0E7C7B' },
+  eventTime: { fontSize: 17, fontWeight: '600', color: '#0E7C7B' },
   checkbox: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 2,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2.5,
     borderColor: '#0E7C7B',
     justifyContent: 'center',
     alignItems: 'center',
   },
   checkboxDone: { backgroundColor: '#0E7C7B' },
-  checkMark: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  checkMark: { color: '#fff', fontSize: 20, fontWeight: '700' },
   eventRight: { flex: 1, justifyContent: 'center' },
-  eventTitle: { fontSize: 17, fontWeight: '600', color: '#123' },
+  eventTitle: { fontSize: 19, fontWeight: '600', color: '#123' },
   eventTitleDone: { textDecorationLine: 'line-through', color: '#889' },
-  eventType: { fontSize: 13, color: '#889', marginTop: 2 },
-  empty: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  emptyText: { fontSize: 18, color: '#556' },
-  emptyHint: { fontSize: 15, color: '#889', marginTop: 6 },
+  eventType: { fontSize: 15, color: '#889', marginTop: 2 },
+  empty: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
+  emptyText: { fontSize: 20, color: '#556', textAlign: 'center' },
+  emptyHint: { fontSize: 17, color: '#889', marginTop: 8, textAlign: 'center' },
 });
